@@ -47,8 +47,6 @@ class DataTable extends React.Component {
     rows: PropTypes.array.isRequired,
     /** Object key to use to sort data table. */
     sortByKey: PropTypes.string,
-    /** Function that returns the value used to sort data table. (not used if `sortByKey` is defined as well) */
-    sortBy: PropTypes.func,
     /**
      * Indicates whether the table should use a bootstrap responsive table or not:
      * https://getbootstrap.com/docs/3.3/css/#tables-responsive
@@ -67,7 +65,6 @@ class DataTable extends React.Component {
     useResponsiveTable: true,
     headerCellFormatter: (header) => { return (<th>{header}</th>); },
     sortByKey: undefined,
-    sortBy: undefined,
   };
 
   state = {
@@ -101,10 +98,6 @@ class DataTable extends React.Component {
     if (this.props.sortByKey) {
       sortedDataRows = sortedDataRows.sort((a, b) => {
         return a[this.props.sortByKey].localeCompare(b[this.props.sortByKey]);
-      });
-    } else if (this.props.sortBy) {
-      sortedDataRows = sortedDataRows.sort((a, b) => {
-        return this.props.sortBy(a).localeCompare(this.props.sortBy(b));
       });
     }
     const formattedDataRows = sortedDataRows.map((row) => {

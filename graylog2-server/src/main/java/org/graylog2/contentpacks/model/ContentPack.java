@@ -18,9 +18,6 @@ package org.graylog2.contentpacks.model;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.graylog2.contentpacks.model.constraints.Constraint;
-
-import java.util.Set;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = Versioned.FIELD_META_VERSION, defaultImpl = LegacyContentPack.class)
 @JsonSubTypes({
@@ -30,6 +27,4 @@ import java.util.Set;
 public interface ContentPack extends Identified, Revisioned, Versioned {
     interface ContentPackBuilder<SELF> extends IdBuilder<SELF>, RevisionBuilder<SELF>, VersionBuilder<SELF> {
     }
-
-    Set<Constraint> requires();
 }
