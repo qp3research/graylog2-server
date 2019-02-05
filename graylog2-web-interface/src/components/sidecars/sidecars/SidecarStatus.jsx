@@ -2,13 +2,9 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import lodash from 'lodash';
-import { Button, Col, Row } from 'react-bootstrap';
-
-import SidecarStatusEnum from 'logic/sidecar/SidecarStatusEnum';
-import commonStyles from 'components/sidecars/common/CommonSidecarStyles.css';
+import { Col, Row } from 'react-bootstrap';
 
 import SidecarStatusFileList from './SidecarStatusFileList';
-import VerboseMessageModal from './VerboseMessageModal';
 
 const SidecarStatus = createReactClass({
   propTypes: {
@@ -16,9 +12,15 @@ const SidecarStatus = createReactClass({
     collectors: PropTypes.array.isRequired,
   },
 
-  getInitialState() {
-    return { collectorName: '', collectorVerbose: '' };
+  componentDidMount() {
+    this.style.use();
   },
+
+  componentWillUnmount() {
+    this.style.unuse();
+  },
+
+  style: require('!style/useable!css!../styles/SidecarStyles.css'),
 
   formatNodeDetails(details) {
     if (!details) {
@@ -26,7 +28,7 @@ const SidecarStatus = createReactClass({
     }
     const metrics = details.metrics || {};
     return (
-      <dl className={`${commonStyles.deflist} ${commonStyles.topMargin}`}>
+      <dl className="deflist top-margin">
         <dt>IP Address</dt>
         <dd>{lodash.defaultTo(details.ip, 'Not available')}</dd>
         <dt>Operating System</dt>
@@ -60,37 +62,21 @@ const SidecarStatus = createReactClass({
 
     const statuses = [];
     collectorStatuses.forEach((status) => {
-      const collector = collectors.find(c => c.id === status.collector_id);
+      const collector = collectors.find(collector => collector.id === status.collector_id);
 
       let statusMessage;
       let statusBadge;
       let statusClass;
-      let verboseButton;
       switch (status.status) {
-        case SidecarStatusEnum.RUNNING:
+        case 0:
           statusMessage = 'Collector is running.';
           statusClass = 'text-success';
           statusBadge = <i className="fa fa-play fa-fw" />;
           break;
-        case SidecarStatusEnum.FAILING:
+        case 2:
           statusMessage = status.message;
           statusClass = 'text-danger';
           statusBadge = <i className="fa fa-warning fa-fw" />;
-
-          if (status.verbose_message) {
-            verboseButton = (
-              <Button bsStyle="link"
-                      bsSize="xs"
-                      onClick={() => this._onShowVerbose(collector.name, status.verbose_message)}>
-                Show Details
-              </Button>
-            );
-          }
-          break;
-        case SidecarStatusEnum.STOPPED:
-          statusMessage = status.message;
-          statusClass = 'text-danger';
-          statusBadge = <i className="fa fa-stop fa-fw" />;
           break;
         default:
           statusMessage = 'Collector status is currently unknown.';
@@ -100,22 +86,17 @@ const SidecarStatus = createReactClass({
 
       if (collector) {
         statuses.push(
-          <dt key={`${collector.id}-key`} className={statusClass}>{collector.name}</dt>,
-          <dd key={`${collector.id}-description`} className={statusClass}>{statusBadge}&ensp;{statusMessage}&ensp;{verboseButton}</dd>,
+          <dt key={`${collector}-key`} className={statusClass}>{collector.name}</dt>,
+          <dd key={`${collector}-description`} className={statusClass}>{statusBadge}&ensp;{statusMessage}</dd>,
         );
       }
     });
 
     return (
-      <dl className={commonStyles.deflist}>
+      <dl className="deflist">
         {statuses}
       </dl>
     );
-  },
-
-  _onShowVerbose(name, verbose) {
-    this.setState({ collectorName: name, collectorVerbose: verbose });
-    this.modal.open();
   },
 
   render() {
@@ -134,7 +115,7 @@ const SidecarStatus = createReactClass({
         <Row className="content">
           <Col md={12}>
             <h2>Collectors status</h2>
-            <div className={commonStyles.topMargin}>
+            <div className="top-margin">
               {this.formatCollectorStatus(sidecar.node_details, this.props.collectors)}
             </div>
           </Col>
@@ -142,15 +123,12 @@ const SidecarStatus = createReactClass({
         <Row className="content" hidden={logFileList.length === 0}>
           <Col md={12}>
             <h2>Log Files</h2>
-            <p className={commonStyles.topMargin}>Recently modified files will be highlighted in blue.</p>
-            <div>
+            <p>Recently modified files will be highlighted in blue.</p>
+            <div className="top-margin">
               <SidecarStatusFileList files={logFileList} />
             </div>
           </Col>
         </Row>
-        <VerboseMessageModal ref={(c) => { this.modal = c; }}
-                             collectorName={this.state.collectorName}
-                             collectorVerbose={this.state.collectorVerbose} />,
       </div>
     );
   },

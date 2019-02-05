@@ -13,19 +13,14 @@ describe('<ContentPackInstallations />', () => {
       content_pack_revision: 1,
       parameters: {
         SOURCE: {
-          name: 'string',
+          type: 'string',
           value: 'hulud.com.uk',
         },
       },
       entities: [
         {
-          id: '5ba38df33d274660f0b94118',
-          type: {
-            name: 'input',
-            version: '1',
-          },
-          content_pack_entity_id: '5b6d973d3d274645572a4318',
-          title: 'hulud.net',
+          id: '5b55b8b73d274645e49f7eea',
+          type: 'input',
         },
       ],
       comment: 'The fake input',

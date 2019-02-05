@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 public class MessagesIT extends ElasticsearchBase {
     private Messages messages;
@@ -49,8 +50,7 @@ public class MessagesIT extends ElasticsearchBase {
         source.put("timestamp", "2017-04-13 15:29:00.000");
         final Index indexRequest = messages.prepareIndexRequest(index, source, "1");
         final DocumentResult indexResponse = client().execute(indexRequest);
-
-        assertThat(indexResponse.isSucceeded()).isTrue();
+        assumeTrue(indexResponse.isSucceeded());
 
         final ResultMessage resultMessage = messages.get("1", index);
         final Message message = resultMessage.getMessage();

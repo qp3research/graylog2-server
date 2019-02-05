@@ -15,7 +15,7 @@ class EditPatternModal extends React.Component {
     create: PropTypes.bool,
     sampleData: PropTypes.string,
     savePattern: PropTypes.func.isRequired,
-    testPattern: PropTypes.func.isRequired,
+    testPattern: PropTypes.func,
     validPatternName: PropTypes.func.isRequired,
   };
 
@@ -26,6 +26,7 @@ class EditPatternModal extends React.Component {
     patterns: [],
     create: false,
     sampleData: '',
+    testPattern: () => {},
   };
 
   state = {

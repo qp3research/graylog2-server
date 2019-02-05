@@ -134,7 +134,6 @@ public class RelativeSearchResource extends SearchResource {
             @QueryParam("range") @PositiveOrZero int range,
             @ApiParam(name = "limit", value = "Maximum number of messages to return.", required = false) @QueryParam("limit") int limit,
             @ApiParam(name = "offset", value = "Offset", required = false) @QueryParam("offset") int offset,
-            @ApiParam(name = "batch_size", value = "Batch size for the backend storage export request.", required = false) @QueryParam("batch_size") @DefaultValue(DEFAULT_SCROLL_BATCH_SIZE) int batchSize,
             @ApiParam(name = "filter", value = "Filter", required = false) @QueryParam("filter") String filter,
             @ApiParam(name = "fields", value = "Comma separated list of fields to return", required = true)
             @QueryParam("fields") @NotEmpty String fields) {
@@ -144,7 +143,7 @@ public class RelativeSearchResource extends SearchResource {
         final TimeRange timeRange = buildRelativeTimeRange(range);
 
         final ScrollResult scroll = searches
-                .scroll(query, timeRange, batchSize, offset, fieldList, filter);
+                .scroll(query, timeRange, limit, offset, fieldList, filter);
         return buildChunkedOutput(scroll, limit);
     }
 
@@ -165,14 +164,13 @@ public class RelativeSearchResource extends SearchResource {
             @QueryParam("range") @PositiveOrZero int range,
             @ApiParam(name = "limit", value = "Maximum number of messages to return.", required = false) @QueryParam("limit") int limit,
             @ApiParam(name = "offset", value = "Offset", required = false) @QueryParam("offset") int offset,
-            @ApiParam(name = "batch_size", value = "Batch size for the backend storage export request.", required = false) @QueryParam("batch_size") @DefaultValue(DEFAULT_SCROLL_BATCH_SIZE) int batchSize,
             @ApiParam(name = "filter", value = "Filter", required = false) @QueryParam("filter") String filter,
             @ApiParam(name = "fields", value = "Comma separated list of fields to return", required = true)
             @QueryParam("fields") @NotEmpty String fields) {
         checkSearchPermission(filter, RestPermissions.SEARCHES_RELATIVE);
         final String filename = "graylog-search-result-relative-" + range + ".csv";
         return Response
-            .ok(searchRelativeChunked(query, range, limit, offset, batchSize, filter, fields))
+            .ok(searchRelativeChunked(query, range, limit, offset, filter, fields))
             .header("Content-Disposition", "attachment; filename=" + filename)
             .build();
     }

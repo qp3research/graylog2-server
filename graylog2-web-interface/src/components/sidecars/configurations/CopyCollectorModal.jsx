@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import lodash from 'lodash';
 import { MenuItem } from 'react-bootstrap';
 
 import { BootstrapModalForm, Input } from 'components/bootstrap';
@@ -9,7 +8,7 @@ import style from './CopyModal.css';
 
 class CopyCollectorModal extends React.Component {
   static propTypes = {
-    collector: PropTypes.object.isRequired,
+    id: PropTypes.string,
     copyCollector: PropTypes.func.isRequired,
     validateCollector: PropTypes.func.isRequired,
   };
@@ -20,7 +19,7 @@ class CopyCollectorModal extends React.Component {
   };
 
   state = {
-    id: this.props.collector.id,
+    id: this.props.id,
     name: '',
     error: false,
     error_message: '',
@@ -31,7 +30,7 @@ class CopyCollectorModal extends React.Component {
   };
 
   _getId = (prefixIdName) => {
-    return `${prefixIdName}-${this.state.id}`;
+    return `${prefixIdName}-${this.props.id}`;
   };
 
   _closeModal = () => {
@@ -47,25 +46,16 @@ class CopyCollectorModal extends React.Component {
     const collector = this.state;
 
     if (!collector.error) {
-      this.props.copyCollector(this.state.id, this.state.name, this._saved);
+      this.props.copyCollector(this.props.id, this.state.name, this._saved);
     }
   };
 
   _changeName = (event) => {
     const nextName = event.target.value;
     this.setState({ name: nextName });
-
-    const nextCollector = lodash.cloneDeep(this.props.collector);
-    nextCollector.name = nextName;
-    nextCollector.id = '';
-
-    this.props.validateCollector(nextCollector).then((validation) => {
-      let errorMessage = '';
-      if (validation.errors.name) {
-        errorMessage = validation.errors.name[0];
-      }
-      this.setState({ error: validation.failed, error_message: errorMessage });
-    });
+    this.props.validateCollector(nextName).then(validation => (
+      this.setState({ error: validation.error, error_message: validation.error_message })
+    ));
   };
 
   render() {

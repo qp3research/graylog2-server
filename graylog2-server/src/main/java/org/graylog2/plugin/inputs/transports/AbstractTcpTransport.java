@@ -17,6 +17,7 @@
 package org.graylog2.plugin.inputs.transports;
 
 import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -43,8 +44,6 @@ import org.graylog2.inputs.transports.NettyTransportConfiguration;
 import org.graylog2.inputs.transports.netty.ChannelRegistrationHandler;
 import org.graylog2.inputs.transports.netty.EventLoopGroupFactory;
 import org.graylog2.inputs.transports.netty.ExceptionLoggingChannelHandler;
-import org.graylog2.inputs.transports.netty.ByteBufMessageAggregationHandler;
-import org.graylog2.inputs.transports.netty.RawMessageHandler;
 import org.graylog2.inputs.transports.netty.ServerSocketChannelFactory;
 import org.graylog2.plugin.LocalMetricRegistry;
 import org.graylog2.plugin.configuration.Configuration;
@@ -56,7 +55,6 @@ import org.graylog2.plugin.configuration.fields.TextField;
 import org.graylog2.plugin.inputs.MessageInput;
 import org.graylog2.plugin.inputs.MisfireException;
 import org.graylog2.plugin.inputs.annotations.ConfigClass;
-import org.graylog2.plugin.inputs.codecs.CodecAggregator;
 import org.graylog2.plugin.inputs.transports.util.KeyUtil;
 import org.graylog2.plugin.inputs.util.ConnectionCounter;
 import org.graylog2.plugin.inputs.util.ThroughputCounter;
@@ -77,6 +75,7 @@ import java.security.cert.X509Certificate;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -228,7 +227,6 @@ public abstract class AbstractTcpTransport extends NettyTransport {
     @Override
     protected LinkedHashMap<String, Callable<? extends ChannelHandler>> getChildChannelHandlers(MessageInput input) {
         final LinkedHashMap<String, Callable<? extends ChannelHandler>> handlers = new LinkedHashMap<>();
-        final CodecAggregator aggregator = getAggregator();
 
         handlers.put("channel-registration", () -> new ChannelRegistrationHandler(childChannels));
         handlers.put("traffic-counter", () -> throughputCounter);
@@ -237,13 +235,7 @@ public abstract class AbstractTcpTransport extends NettyTransport {
             LOG.info("Enabled TLS for input [{}/{}]. key-file=\"{}\" cert-file=\"{}\"", input.getName(), input.getId(), tlsKeyFile, tlsCertFile);
             handlers.put("tls", getSslHandlerCallable(input));
         }
-        handlers.putAll(getCustomChildChannelHandlers(input));
-        if (aggregator != null) {
-            LOG.debug("Adding codec aggregator {} to channel pipeline", aggregator);
-            handlers.put("codec-aggregator", () -> new ByteBufMessageAggregationHandler(aggregator, localRegistry));
-        }
-        handlers.put("rawmessage-handler", () -> new RawMessageHandler(input));
-        handlers.put("exception-logger", () -> new ExceptionLoggingChannelHandler(input, LOG));
+        handlers.putAll(super.getChildChannelHandlers(input));
 
         return handlers;
     }
@@ -292,22 +284,22 @@ public abstract class AbstractTcpTransport extends NettyTransport {
                 throw new IllegalArgumentException("Unknown TLS client authentication mode: " + tlsClientAuth);
         }
 
-        return buildSslHandlerCallable(nettyTransportConfiguration.getTlsProvider(), certFile, keyFile, tlsKeyPassword, clientAuth, tlsClientAuthCertFile, input);
+        return buildSslHandlerCallable(nettyTransportConfiguration.getTlsProvider(), certFile, keyFile, tlsKeyPassword, clientAuth, tlsClientAuthCertFile);
     }
 
-    private Callable<ChannelHandler> buildSslHandlerCallable(SslProvider tlsProvider, File certFile, File keyFile, String password, ClientAuth clientAuth, File clientAuthCertFile, MessageInput input) {
+    private Callable<ChannelHandler> buildSslHandlerCallable(SslProvider tlsProvider, File certFile, File keyFile, String password, ClientAuth clientAuth, File clientAuthCertFile) {
         return new Callable<ChannelHandler>() {
             @Override
             public ChannelHandler call() throws Exception {
                 try {
-                    return new SslHandler(createSslEngine(input));
+                    return new SslHandler(createSslEngine());
                 } catch (SSLException e) {
                     LOG.error("Error creating SSL context. Make sure the certificate and key are in the correct format: cert=X.509 key=PKCS#8");
                     throw e;
                 }
             }
 
-            private SSLEngine createSslEngine(MessageInput input) throws IOException, CertificateException {
+            private SSLEngine createSslEngine() throws IOException, CertificateException {
                 final X509Certificate[] clientAuthCerts;
                 if (EnumSet.of(ClientAuth.OPTIONAL, ClientAuth.REQUIRE).contains(clientAuth)) {
                     if (clientAuthCertFile.exists()) {
@@ -316,8 +308,7 @@ public abstract class AbstractTcpTransport extends NettyTransport {
                                 .map(certificate -> (X509Certificate) certificate)
                                 .toArray(X509Certificate[]::new);
                     } else {
-                        LOG.warn("Client auth configured, but no authorized certificates / certificate authorities configured for input [{}/{}]",
-                                input.getName(), input.getId());
+                        LOG.warn("Client auth configured, but no authorized certificates / certificate authorities configured");
                         clientAuthCerts = null;
                     }
                 } else {

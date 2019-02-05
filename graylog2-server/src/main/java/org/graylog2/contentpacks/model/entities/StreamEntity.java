@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 import org.graylog.autovalue.WithBeanGetter;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
+import org.graylog2.plugin.streams.Stream;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -49,14 +50,6 @@ public abstract class StreamEntity {
     @NotNull
     public abstract List<StreamRuleEntity> streamRules();
 
-    @JsonProperty("alert_conditions")
-    @NotNull
-    public abstract List<StreamAlertConditionEntity> alertConditions();
-
-    @JsonProperty("alarm_callbacks")
-    @NotNull
-    public abstract List<StreamAlarmCallbackEntity> alarmCallbacks();
-
     @JsonProperty("outputs")
     @NotNull
     public abstract Set<ValueReference> outputs();
@@ -74,8 +67,6 @@ public abstract class StreamEntity {
             @JsonProperty("disabled") ValueReference disabled,
             @JsonProperty("matching_type") ValueReference matchingType,
             @JsonProperty("stream_rules") @NotNull List<StreamRuleEntity> streamRules,
-            @JsonProperty("alert_conditions") @NotNull List<StreamAlertConditionEntity> alertConditions,
-            @JsonProperty("alarm_callbacks") @NotNull List<StreamAlarmCallbackEntity> streamAlarmCallbacks,
             @JsonProperty("outputs") @NotNull Set<ValueReference> outputs,
             @JsonProperty("default_stream") ValueReference defaultStream,
             @JsonProperty("remove_matches") ValueReference removeMatches) {
@@ -85,8 +76,6 @@ public abstract class StreamEntity {
                 disabled,
                 matchingType,
                 streamRules,
-                alertConditions,
-                streamAlarmCallbacks,
                 outputs,
                 defaultStream,
                 removeMatches);

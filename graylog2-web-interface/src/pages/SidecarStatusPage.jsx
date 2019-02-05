@@ -10,7 +10,6 @@ import DocumentationLink from 'components/support/DocumentationLink';
 
 import CombinedProvider from 'injection/CombinedProvider';
 import Routes from 'routing/Routes';
-import history from 'util/History';
 import SidecarStatus from 'components/sidecars/sidecars/SidecarStatus';
 
 const { SidecarsActions } = CombinedProvider.get('Sidecars');
@@ -38,18 +37,11 @@ class SidecarStatusPage extends React.Component {
   }
 
   reloadSidecar = () => {
-    SidecarsActions.getSidecar(this.props.params.sidecarId).then(
-      sidecar => this.setState({ sidecar }),
-      (error) => {
-        if (error.status === 404) {
-          history.push(Routes.SYSTEM.SIDECARS.OVERVIEW);
-        }
-      },
-    );
+    SidecarsActions.getSidecar(this.props.params.sidecarId).then(sidecar => this.setState({ sidecar }));
   };
 
   reloadCollectors = () => {
-    CollectorsActions.all().then(response => this.setState({ collectors: response.collectors }));
+    CollectorsActions.all().then(collectors => this.setState({ collectors }));
   };
 
   render() {
@@ -71,7 +63,7 @@ class SidecarStatusPage extends React.Component {
 
             <span>
               Read more about sidecars and how to set them up in the
-              {' '}<DocumentationLink page={DocsHelper.PAGES.COLLECTOR_STATUS} text="Graylog documentation" />.
+              {' '}<DocumentationLink page={DocsHelper.PAGES.COLLECTOR_STATUS} text="Graylog documentation"/>.
             </span>
 
             <ButtonToolbar>

@@ -1,18 +1,15 @@
 import { PluginManifest, PluginStore } from 'graylog-web-plugin/plugin';
 
-import {} from 'components/maps/adapter';
 import CSVFileAdapterFieldSet from './CSVFileAdapterFieldSet';
 import CSVFileAdapterSummary from './CSVFileAdapterSummary';
 import CSVFileAdapterDocumentation from './CSVFileAdapterDocumentation';
-import DnsAdapterFieldSet from './DnsAdapterFieldSet';
-import DnsAdapterSummary from './DnsAdapterSummary';
-import DnsAdapterDocumentation from './DnsAdapterDocumentation';
 import DSVHTTPAdapterFieldSet from './DSVHTTPAdapterFieldSet';
 import DSVHTTPAdapterSummary from './DSVHTTPAdapterSummary';
 import DSVHTTPAdapterDocumentation from './DSVHTTPAdapterDocumentation';
 import HTTPJSONPathAdapterFieldSet from './HTTPJSONPathAdapterFieldSet';
 import HTTPJSONPathAdapterSummary from './HTTPJSONPathAdapterSummary';
 import HTTPJSONPathAdapterDocumentation from './HTTPJSONPathAdapterDocumentation';
+import {} from 'components/maps/adapter';
 
 PluginStore.register(new PluginManifest({}, {
   lookupTableAdapters: [
@@ -24,11 +21,11 @@ PluginStore.register(new PluginManifest({}, {
       documentationComponent: CSVFileAdapterDocumentation,
     },
     {
-      type: 'dnslookup',
-      displayName: 'DNS Lookup',
-      formComponent: DnsAdapterFieldSet,
-      summaryComponent: DnsAdapterSummary,
-      documentationComponent: DnsAdapterDocumentation,
+      type: 'httpjsonpath',
+      displayName: 'HTTP JSONPath',
+      formComponent: HTTPJSONPathAdapterFieldSet,
+      summaryComponent: HTTPJSONPathAdapterSummary,
+      documentationComponent: HTTPJSONPathAdapterDocumentation,
     },
     {
       type: 'dsvhttp',
@@ -36,13 +33,6 @@ PluginStore.register(new PluginManifest({}, {
       formComponent: DSVHTTPAdapterFieldSet,
       summaryComponent: DSVHTTPAdapterSummary,
       documentationComponent: DSVHTTPAdapterDocumentation,
-    },
-    {
-      type: 'httpjsonpath',
-      displayName: 'HTTP JSONPath',
-      formComponent: HTTPJSONPathAdapterFieldSet,
-      summaryComponent: HTTPJSONPathAdapterSummary,
-      documentationComponent: HTTPJSONPathAdapterDocumentation,
     },
   ],
 }));

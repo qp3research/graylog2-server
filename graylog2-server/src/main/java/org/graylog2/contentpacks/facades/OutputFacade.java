@@ -18,9 +18,6 @@ package org.graylog2.contentpacks.facades;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSet;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.exceptions.ContentPackException;
 import org.graylog2.contentpacks.model.ModelId;
 import org.graylog2.contentpacks.model.ModelType;
@@ -31,8 +28,8 @@ import org.graylog2.contentpacks.model.entities.Entity;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.EntityExcerpt;
 import org.graylog2.contentpacks.model.entities.EntityV1;
+import org.graylog2.contentpacks.model.entities.EntityWithConstraints;
 import org.graylog2.contentpacks.model.entities.NativeEntity;
-import org.graylog2.contentpacks.model.entities.NativeEntityDescriptor;
 import org.graylog2.contentpacks.model.entities.OutputEntity;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.database.NotFoundException;
@@ -57,7 +54,7 @@ import static org.graylog2.contentpacks.model.entities.references.ReferenceMapUt
 public class OutputFacade implements EntityFacade<Output> {
     private static final Logger LOG = LoggerFactory.getLogger(OutputFacade.class);
 
-    public static final ModelType TYPE_V1 = ModelTypes.OUTPUT_V1;
+    public static final ModelType TYPE = ModelTypes.OUTPUT;
 
     private final ObjectMapper objectMapper;
     private final OutputService outputService;
@@ -75,22 +72,22 @@ public class OutputFacade implements EntityFacade<Output> {
         this.outputFactories = outputFactories;
     }
 
-    @VisibleForTesting
-    Entity exportNativeEntity(Output output, EntityDescriptorIds entityDescriptorIds) {
+    @Override
+    public EntityWithConstraints exportNativeEntity(Output output) {
         final OutputEntity outputEntity = OutputEntity.create(
                 ValueReference.of(output.getTitle()),
                 ValueReference.of(output.getType()),
                 toReferenceMap(output.getConfiguration())
         );
         final JsonNode data = objectMapper.convertValue(outputEntity, JsonNode.class);
-        final Set<Constraint> constraints = versionConstraints(output);
-        return EntityV1.builder()
-                .id(ModelId.of(entityDescriptorIds.getOrThrow(output.getId(), ModelTypes.OUTPUT_V1)))
-                .type(ModelTypes.OUTPUT_V1)
-                .constraints(ImmutableSet.copyOf(constraints))
+        final EntityV1 entity = EntityV1.builder()
+                .id(ModelId.of(output.getId()))
+                .type(ModelTypes.OUTPUT)
                 .data(data)
                 .build();
+        final Set<Constraint> constraints = versionConstraints(output);
 
+        return EntityWithConstraints.create(entity, constraints);
     }
 
     private Set<Constraint> versionConstraints(Output output) {
@@ -130,19 +127,9 @@ public class OutputFacade implements EntityFacade<Output> {
         );
         try {
             final Output output = outputService.create(createOutputRequest, username);
-            return NativeEntity.create(entity.id(), output.getId(), TYPE_V1, output.getTitle(), output);
+            return NativeEntity.create(output.getId(), TYPE, output);
         } catch (ValidationException e) {
             throw new IllegalArgumentException(e);
-        }
-    }
-
-    @Override
-    public Optional<NativeEntity<Output>> loadNativeEntity(NativeEntityDescriptor nativeEntityDescriptor) {
-        try {
-            final Output output = outputService.load(nativeEntityDescriptor.id().id());
-            return Optional.of(NativeEntity.create(nativeEntityDescriptor, output));
-        } catch (NotFoundException e) {
-            return Optional.empty();
         }
     }
 
@@ -158,7 +145,7 @@ public class OutputFacade implements EntityFacade<Output> {
     public EntityExcerpt createExcerpt(Output output) {
         return EntityExcerpt.builder()
                 .id(ModelId.of(output.getId()))
-                .type(ModelTypes.OUTPUT_V1)
+                .type(ModelTypes.OUTPUT)
                 .title(output.getTitle())
                 .build();
     }
@@ -171,11 +158,11 @@ public class OutputFacade implements EntityFacade<Output> {
     }
 
     @Override
-    public Optional<Entity> exportEntity(EntityDescriptor entityDescriptor, EntityDescriptorIds entityDescriptorIds) {
+    public Optional<EntityWithConstraints> exportEntity(EntityDescriptor entityDescriptor) {
         final ModelId modelId = entityDescriptor.id();
         try {
             final Output output = outputService.load(modelId.id());
-            return Optional.of(exportNativeEntity(output, entityDescriptorIds));
+            return Optional.of(exportNativeEntity(output));
         } catch (NotFoundException e) {
             LOG.debug("Couldn't find output {}", entityDescriptor, e);
             return Optional.empty();

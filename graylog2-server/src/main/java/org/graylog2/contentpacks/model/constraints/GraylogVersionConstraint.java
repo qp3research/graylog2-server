@@ -21,19 +21,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
 import com.vdurmont.semver4j.Requirement;
+import org.graylog2.contentpacks.model.ModelType;
 import org.graylog2.plugin.Version;
 
 @AutoValue
 @JsonDeserialize(builder = AutoValue_GraylogVersionConstraint.Builder.class)
 public abstract class GraylogVersionConstraint implements Constraint {
     // TODO: Rename to graylog-version
-    public static final String TYPE_NAME = "server-version";
-    private static final String FIELD_GRAYLOG_VERSION = "version";
+    static final String TYPE_NAME = "server-version";
+    static final String FIELD_GRAYLOG_VERSION = "version";
 
     @JsonProperty(FIELD_GRAYLOG_VERSION)
     public abstract Requirement version();
-
-    public abstract Builder toBuilder();
 
     public static Builder builder() {
         return new AutoValue_GraylogVersionConstraint.Builder();
@@ -41,7 +40,7 @@ public abstract class GraylogVersionConstraint implements Constraint {
 
     public static GraylogVersionConstraint of(Version version) {
         final String versionString = version.toString().replace("-SNAPSHOT", "");
-        final Requirement requirement = Requirement.buildNPM(">=" + versionString);
+        final Requirement requirement = Requirement.buildNPM("^" + versionString);
         return builder()
                 .version(requirement)
                 .build();
@@ -65,7 +64,7 @@ public abstract class GraylogVersionConstraint implements Constraint {
         abstract GraylogVersionConstraint autoBuild();
 
         public GraylogVersionConstraint build() {
-            type(TYPE_NAME);
+            type(ModelType.of(TYPE_NAME));
             return autoBuild();
         }
     }

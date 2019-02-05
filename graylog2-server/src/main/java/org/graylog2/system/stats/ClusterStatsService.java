@@ -18,6 +18,7 @@ package org.graylog2.system.stats;
 
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
 import org.graylog2.alerts.AlertService;
+import org.graylog2.bundles.BundleService;
 import org.graylog2.dashboards.DashboardService;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.inputs.InputService;
@@ -47,6 +48,7 @@ public class ClusterStatsService {
     private final StreamRuleService streamRuleService;
     private final OutputService outputService;
     private final DashboardService dashboardService;
+    private final BundleService bundleService;
     private final LdapSettingsService ldapSettingsService;
     private final RoleService roleService;
     private final AlertService alertService;
@@ -61,6 +63,7 @@ public class ClusterStatsService {
                                StreamRuleService streamRuleService,
                                OutputService outputService,
                                DashboardService dashboardService,
+                               BundleService bundleService,
                                LdapSettingsService ldapSettingsService,
                                RoleService roleService,
                                AlertService alertService,
@@ -73,6 +76,7 @@ public class ClusterStatsService {
         this.streamRuleService = streamRuleService;
         this.outputService = outputService;
         this.dashboardService = dashboardService;
+        this.bundleService = bundleService;
         this.ldapSettingsService = ldapSettingsService;
         this.roleService = roleService;
         this.alertService = alertService;
@@ -95,6 +99,7 @@ public class ClusterStatsService {
                 inputService.totalCountByType(),
                 inputService.totalExtractorCount(),
                 inputService.totalExtractorCountByType(),
+                bundleService.count(),
                 ldapStats(),
                 alarmStats()
         );

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import { Button, Modal } from 'react-bootstrap';
-import lodash from 'lodash';
 
 import BootstrapModalWrapper from 'components/bootstrap/BootstrapModalWrapper';
 import CombinedProvider from 'injection/CombinedProvider';
@@ -14,29 +14,9 @@ class SourceViewModal extends React.Component {
     templateString: PropTypes.string,
   };
 
-  static defaultProps = {
-    configurationId: undefined,
-    templateString: undefined,
-  };
-
-  static initialState = {
+  state = {
     source: undefined,
     name: undefined,
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = SourceViewModal.initialState;
-  }
-
-  componentDidUpdate(prevProps) {
-    if (!lodash.isEqual(this.state, SourceViewModal.initialState) && !lodash.isEqual(prevProps, this.props)) {
-      this.resetState();
-    }
-  }
-
-  resetState = () => {
-    this.setState(SourceViewModal.initialState);
   };
 
   open = () => {
@@ -49,31 +29,16 @@ class SourceViewModal extends React.Component {
   };
 
   _loadConfiguration = () => {
-    // Don't load anything if neither template nor configuration ID are set
-    if (!this.props.templateString && !this.props.configurationId) {
-      return;
-    }
-
     if (this.props.templateString) {
       CollectorConfigurationsActions.renderPreview(this.props.templateString)
-        .then(
-          (response) => {
-            this.setState({ source: response.preview, name: 'preview' });
-          },
-          (error) => {
-            this.setState({ source: `Error rendering preview: ${error.responseMessage ? error.responseMessage : error}` });
-          },
-        );
+        .then((response) => {
+          this.setState({ source: response.preview, name: 'preview' });
+        });
     } else {
       CollectorConfigurationsActions.getConfiguration(this.props.configurationId)
-        .then(
-          (configuration) => {
-            this.setState({ source: configuration.template, name: configuration.name });
-          },
-          (error) => {
-            this.setState({ source: `Error fetching configuration: ${error.responseMessage || error}` });
-          },
-        );
+        .then((configuration) => {
+          this.setState({ source: configuration.template, name: configuration.name });
+        });
     }
   };
 
@@ -86,7 +51,7 @@ class SourceViewModal extends React.Component {
         <Modal.Body>
           <div className="configuration">
             <pre>
-              {this.state.source || '<empty template>'}
+              {this.state.source}
             </pre>
           </div>
         </Modal.Body>

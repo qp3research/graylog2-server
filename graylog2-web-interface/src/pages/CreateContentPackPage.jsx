@@ -10,10 +10,8 @@ import history from 'util/History';
 import UserNotification from 'util/UserNotification';
 import { DocumentTitle, PageHeader } from 'components/common';
 import CombinedProvider from 'injection/CombinedProvider';
+import ObjectUtils from 'util/ObjectUtils';
 import ContentPackEdit from 'components/content-packs/ContentPackEdit';
-import ContentPack from 'logic/content-packs/ContentPack';
-import Entity from 'logic/content-packs/Entity';
-
 
 const { ContentPacksActions } = CombinedProvider.get('ContentPacks');
 const { CatalogActions, CatalogStore } = CombinedProvider.get('Catalog');
@@ -24,7 +22,19 @@ const CreateContentPackPage = createReactClass({
 
   getInitialState() {
     return {
-      contentPack: ContentPack.builder().build(),
+      contentPack: {
+        v: 1,
+        id: this._getUUID(),
+        rev: 1,
+        requires: [],
+        parameters: [],
+        entities: [],
+        name: '',
+        summary: '',
+        description: '',
+        vendor: '',
+        url: '',
+      },
       appliedParameter: {},
       selectedEntities: {},
       selectedStep: undefined,
@@ -57,7 +67,7 @@ const CreateContentPackPage = createReactClass({
   },
 
   _onSave() {
-    ContentPacksActions.create.triggerPromise(this.state.contentPack.toJSON())
+    ContentPacksActions.create.triggerPromise(this.state.contentPack)
       .then(
         () => {
           UserNotification.success('Content pack imported successfully', 'Success!');
@@ -77,12 +87,10 @@ const CreateContentPackPage = createReactClass({
 
   _getEntities(selectedEntities) {
     CatalogActions.getSelectedEntities(selectedEntities).then((result) => {
-      const newContentPack = this.state.contentPack.toBuilder()
-        /* Mark entities from server */
-        .entities(result.entities.map(e => Entity.fromJSON(e, true, this.state.contentPack.parameters)))
-        .build();
-      const fetchedEntities = result.entities.map(e => Entity.fromJSON(e, false, this.state.contentPack.parameters));
-      this.setState({ contentPack: newContentPack, fetchedEntities });
+      const contentPack = ObjectUtils.clone(this.state.contentPack);
+      contentPack.entities = result.entities;
+      contentPack.requires = result.constraints;
+      this.setState({ contentPack: contentPack, fetchedEntities: result.entities });
     });
   },
 

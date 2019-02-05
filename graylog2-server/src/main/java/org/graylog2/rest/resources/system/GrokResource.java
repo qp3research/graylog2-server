@@ -211,7 +211,7 @@ public class GrokResource extends RestResource {
                 .pattern(pattern.pattern())
                 .build();
 
-        return grokPatternService.update(grokPattern);
+        return grokPatternService.save(grokPattern);
     }
 
     @DELETE

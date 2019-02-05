@@ -5,13 +5,14 @@ exports[`<ExpandableList /> should render with a Item 1`] = `
   className="list"
 >
   <li
-    className="listItemPadding"
+    className="listItem"
   >
     <div
       className="listItemContainer"
     >
       <label
         className="checkbox-inline"
+        style={undefined}
         title=""
       >
         <input
@@ -40,13 +41,7 @@ exports[`<ExpandableList /> should render with a Item 1`] = `
       <span
         className="header"
       >
-        <span
-          onClick={[Function]}
-          role="button"
-          tabIndex={0}
-        >
-          Wheel of time
-        </span>
+        Wheel of time
       </span>
     </div>
     <div
@@ -61,13 +56,14 @@ exports[`<ExpandableList /> should render with a nested ExpandableList 1`] = `
   className="list"
 >
   <li
-    className="listItemPadding"
+    className="listItem"
   >
     <div
       className="listItemContainer"
     >
       <label
         className="checkbox-inline"
+        style={undefined}
         title=""
       >
         <input
@@ -96,13 +92,7 @@ exports[`<ExpandableList /> should render with a nested ExpandableList 1`] = `
       <span
         className="header"
       >
-        <span
-          onClick={[Function]}
-          role="button"
-          tabIndex={0}
-        >
-          Wheel of time
-        </span>
+        Wheel of time
       </span>
     </div>
     <div
@@ -112,13 +102,14 @@ exports[`<ExpandableList /> should render with a nested ExpandableList 1`] = `
         className="list"
       >
         <li
-          className="listItemPadding"
+          className="listItem"
         >
           <div
             className="listItemContainer"
           >
             <label
               className="checkbox-inline"
+              style={undefined}
               title=""
             >
               <input
@@ -147,13 +138,7 @@ exports[`<ExpandableList /> should render with a nested ExpandableList 1`] = `
             <span
               className="header"
             >
-              <span
-                onClick={[Function]}
-                role="button"
-                tabIndex={0}
-              >
-                Edmonds Field
-              </span>
+              Edmonds Field
             </span>
           </div>
           <div

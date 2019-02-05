@@ -24,13 +24,13 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.InMemoryMongoDb;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.model.ModelId;
 import org.graylog2.contentpacks.model.ModelTypes;
 import org.graylog2.contentpacks.model.entities.Entity;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.EntityExcerpt;
 import org.graylog2.contentpacks.model.entities.EntityV1;
+import org.graylog2.contentpacks.model.entities.EntityWithConstraints;
 import org.graylog2.contentpacks.model.entities.LookupCacheEntity;
 import org.graylog2.contentpacks.model.entities.NativeEntity;
 import org.graylog2.contentpacks.model.entities.NativeEntityDescriptor;
@@ -93,13 +93,12 @@ public class LookupCacheFacadeTest {
                 .description("Cache Description")
                 .config(new FallbackCacheConfig())
                 .build();
-        final EntityDescriptor descriptor = EntityDescriptor.create(cacheDto.id(), ModelTypes.LOOKUP_CACHE_V1);
-        final EntityDescriptorIds entityDescriptorIds = EntityDescriptorIds.of(descriptor);
-        final Entity entity = facade.exportNativeEntity(cacheDto, entityDescriptorIds);
+        final EntityWithConstraints entityWithConstraints = facade.exportNativeEntity(cacheDto);
+        final Entity entity = entityWithConstraints.entity();
 
         assertThat(entity).isInstanceOf(EntityV1.class);
-        assertThat(entity.id()).isEqualTo(ModelId.of(entityDescriptorIds.get(descriptor).orElse(null)));
-        assertThat(entity.type()).isEqualTo(ModelTypes.LOOKUP_CACHE_V1);
+        assertThat(entity.id()).isEqualTo(ModelId.of("1234567890"));
+        assertThat(entity.type()).isEqualTo(ModelTypes.LOOKUP_CACHE);
 
         final EntityV1 entityV1 = (EntityV1) entity;
         final LookupCacheEntity lookupCacheEntity = objectMapper.convertValue(entityV1.data(), LookupCacheEntity.class);
@@ -112,13 +111,13 @@ public class LookupCacheFacadeTest {
     @Test
     @UsingDataSet(locations = "/org/graylog2/contentpacks/lut_caches.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void exportEntity() {
-        final EntityDescriptor descriptor = EntityDescriptor.create("5adf24b24b900a0fdb4e52dd", ModelTypes.LOOKUP_CACHE_V1);
-        final EntityDescriptorIds entityDescriptorIds = EntityDescriptorIds.of(descriptor);
-        final Entity entity = facade.exportEntity(descriptor, entityDescriptorIds).orElseThrow(AssertionError::new);
+        final EntityDescriptor descriptor = EntityDescriptor.create("5adf24b24b900a0fdb4e52dd", ModelTypes.LOOKUP_CACHE);
+        final EntityWithConstraints entityWithConstraints = facade.exportEntity(descriptor).orElseThrow(AssertionError::new);
+        final Entity entity = entityWithConstraints.entity();
 
         assertThat(entity).isInstanceOf(EntityV1.class);
-        assertThat(entity.id()).isEqualTo(ModelId.of(entityDescriptorIds.get(descriptor).orElse(null)));
-        assertThat(entity.type()).isEqualTo(ModelTypes.LOOKUP_CACHE_V1);
+        assertThat(entity.id()).isEqualTo(ModelId.of("5adf24b24b900a0fdb4e52dd"));
+        assertThat(entity.type()).isEqualTo(ModelTypes.LOOKUP_CACHE);
 
         final EntityV1 entityV1 = (EntityV1) entity;
         final LookupCacheEntity lookupCacheEntity = objectMapper.convertValue(entityV1.data(), LookupCacheEntity.class);
@@ -133,7 +132,7 @@ public class LookupCacheFacadeTest {
     public void createNativeEntity() {
         final Entity entity = EntityV1.builder()
                 .id(ModelId.of("1"))
-                .type(ModelTypes.LOOKUP_CACHE_V1)
+                .type(ModelTypes.LOOKUP_CACHE)
                 .data(objectMapper.convertValue(LookupCacheEntity.create(
                         ValueReference.of("no-op-cache"),
                         ValueReference.of("No-op cache"),
@@ -147,8 +146,8 @@ public class LookupCacheFacadeTest {
         final NativeEntityDescriptor descriptor = nativeEntity.descriptor();
         final CacheDto cacheDto = nativeEntity.entity();
 
-        assertThat(nativeEntity.descriptor().id()).isNotNull();
-        assertThat(descriptor.type()).isEqualTo(ModelTypes.LOOKUP_CACHE_V1);
+        assertThat(descriptor.id()).isEqualTo(ModelId.of("no-op-cache"));
+        assertThat(descriptor.type()).isEqualTo(ModelTypes.LOOKUP_CACHE);
         assertThat(cacheDto.name()).isEqualTo("no-op-cache");
         assertThat(cacheDto.title()).isEqualTo("No-op cache");
         assertThat(cacheDto.description()).isEqualTo("No-op cache");
@@ -162,7 +161,7 @@ public class LookupCacheFacadeTest {
     public void findExisting() {
         final Entity entity = EntityV1.builder()
                 .id(ModelId.of("1"))
-                .type(ModelTypes.LOOKUP_CACHE_V1)
+                .type(ModelTypes.LOOKUP_CACHE)
                 .data(objectMapper.convertValue(LookupCacheEntity.create(
                         ValueReference.of("no-op-cache"),
                         ValueReference.of("No-op cache"),
@@ -177,7 +176,7 @@ public class LookupCacheFacadeTest {
         final CacheDto cacheDto = existingCache.entity();
 
         assertThat(descriptor.id()).isEqualTo(ModelId.of("5adf24b24b900a0fdb4e52dd"));
-        assertThat(descriptor.type()).isEqualTo(ModelTypes.LOOKUP_CACHE_V1);
+        assertThat(descriptor.type()).isEqualTo(ModelTypes.LOOKUP_CACHE);
         assertThat(cacheDto.id()).isEqualTo("5adf24b24b900a0fdb4e52dd");
         assertThat(cacheDto.name()).isEqualTo("no-op-cache");
         assertThat(cacheDto.title()).isEqualTo("No-op cache");
@@ -190,7 +189,7 @@ public class LookupCacheFacadeTest {
     public void findExistingWithNoExistingEntity() {
         final Entity entity = EntityV1.builder()
                 .id(ModelId.of("1"))
-                .type(ModelTypes.LOOKUP_CACHE_V1)
+                .type(ModelTypes.LOOKUP_CACHE)
                 .data(objectMapper.convertValue(LookupCacheEntity.create(
                         ValueReference.of("some-cache"),
                         ValueReference.of("Some cache"),
@@ -209,7 +208,7 @@ public class LookupCacheFacadeTest {
     public void resolveEntity() {
         final Entity entity = EntityV1.builder()
                 .id(ModelId.of("1"))
-                .type(ModelTypes.LOOKUP_CACHE_V1)
+                .type(ModelTypes.LOOKUP_CACHE)
                 .data(objectMapper.convertValue(LookupCacheEntity.create(
                         ValueReference.of("no-op-cache"),
                         ValueReference.of("No-op cache"),
@@ -226,7 +225,7 @@ public class LookupCacheFacadeTest {
     @Test
     @UsingDataSet(locations = "/org/graylog2/contentpacks/lut_caches.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void resolveEntityDescriptor() {
-        final EntityDescriptor descriptor = EntityDescriptor.create("5adf24b24b900a0fdb4e52dd", ModelTypes.LOOKUP_CACHE_V1);
+        final EntityDescriptor descriptor = EntityDescriptor.create("5adf24b24b900a0fdb4e52dd", ModelTypes.LOOKUP_CACHE);
         final Graph<EntityDescriptor> graph = facade.resolveNativeEntity(descriptor);
         assertThat(graph.nodes()).containsOnly(descriptor);
     }
@@ -254,8 +253,8 @@ public class LookupCacheFacadeTest {
                 .build();
         final EntityExcerpt excerpt = facade.createExcerpt(cacheDto);
 
-        assertThat(excerpt.id()).isEqualTo(ModelId.of("1234567890"));
-        assertThat(excerpt.type()).isEqualTo(ModelTypes.LOOKUP_CACHE_V1);
+        assertThat(excerpt.id()).isEqualTo(ModelId.of("cache-name"));
+        assertThat(excerpt.type()).isEqualTo(ModelTypes.LOOKUP_CACHE);
         assertThat(excerpt.title()).isEqualTo("Cache Title");
     }
 
@@ -263,8 +262,8 @@ public class LookupCacheFacadeTest {
     @UsingDataSet(locations = "/org/graylog2/contentpacks/lut_caches.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void listEntityExcerpts() {
         final EntityExcerpt expectedEntityExcerpt = EntityExcerpt.builder()
-                .id(ModelId.of("5adf24b24b900a0fdb4e52dd"))
-                .type(ModelTypes.LOOKUP_CACHE_V1)
+                .id(ModelId.of("no-op-cache"))
+                .type(ModelTypes.LOOKUP_CACHE)
                 .title("No-op cache")
                 .build();
 
@@ -275,16 +274,15 @@ public class LookupCacheFacadeTest {
     @Test
     @UsingDataSet(locations = "/org/graylog2/contentpacks/lut_caches.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void collectEntity() {
-        final EntityDescriptor descriptor = EntityDescriptor.create("5adf24b24b900a0fdb4e52dd", ModelTypes.LOOKUP_CACHE_V1);
-        final EntityDescriptorIds entityDescriptorIds = EntityDescriptorIds.of(descriptor);
-        final Optional<Entity> collectedEntity = facade.exportEntity(descriptor, entityDescriptorIds);
+        final Optional<EntityWithConstraints> collectedEntity = facade.exportEntity(EntityDescriptor.create("no-op-cache", ModelTypes.LOOKUP_CACHE));
         assertThat(collectedEntity)
                 .isPresent()
+                .map(EntityWithConstraints::entity)
                 .containsInstanceOf(EntityV1.class);
 
-        final EntityV1 entity = (EntityV1) collectedEntity.orElseThrow(AssertionError::new);
-        assertThat(entity.id()).isEqualTo(ModelId.of(entityDescriptorIds.get(descriptor).orElse(null)));
-        assertThat(entity.type()).isEqualTo(ModelTypes.LOOKUP_CACHE_V1);
+        final EntityV1 entity = (EntityV1) collectedEntity.map(EntityWithConstraints::entity).orElseThrow(AssertionError::new);
+        assertThat(entity.id()).isEqualTo(ModelId.of("5adf24b24b900a0fdb4e52dd"));
+        assertThat(entity.type()).isEqualTo(ModelTypes.LOOKUP_CACHE);
         final LookupCacheEntity lookupCacheEntity = objectMapper.convertValue(entity.data(), LookupCacheEntity.class);
         assertThat(lookupCacheEntity.name()).isEqualTo(ValueReference.of("no-op-cache"));
         assertThat(lookupCacheEntity.title()).isEqualTo(ValueReference.of("No-op cache"));

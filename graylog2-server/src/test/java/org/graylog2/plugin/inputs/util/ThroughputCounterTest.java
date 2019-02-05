@@ -24,7 +24,6 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -62,7 +61,6 @@ public class ThroughputCounterTest {
     }
 
     @Test
-    @Ignore("Flaky test")
     public void counterReturnsReadBytes() throws InterruptedException {
         final ByteBuf byteBuf = Unpooled.copiedBuffer("Test", StandardCharsets.US_ASCII);
         channel.writeInbound(byteBuf);
@@ -79,7 +77,6 @@ public class ThroughputCounterTest {
     }
 
     @Test
-    @Ignore("Flaky test")
     public void counterReturnsWrittenBytes() throws InterruptedException {
         final ByteBuf byteBuf = Unpooled.copiedBuffer("Test", StandardCharsets.US_ASCII);
         channel.writeOutbound(byteBuf);

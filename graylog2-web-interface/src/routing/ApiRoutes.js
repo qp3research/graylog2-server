@@ -16,7 +16,7 @@ const ApiRoutes = {
   AlertsApiController: {
     get: (alertId) => { return { url: `/streams/alerts/${alertId}` }; },
     list: (streamId, since) => { return { url: `/streams/${streamId}/alerts?since=${since}` }; },
-    listPaginated: (streamId, skip, limit, state) => { return { url: `/streams/${streamId}/alerts/paginated?skip=${skip}&limit=${limit}&state=${state}` }; },
+    listPaginated: (streamId, skip, limit) => { return { url: `/streams/${streamId}/alerts/paginated?skip=${skip}&limit=${limit}` }; },
     listAllPaginated: (skip, limit, state) => { return { url: `/streams/alerts/paginated?skip=${skip}&limit=${limit}&state=${state}` }; },
     listAllStreams: (since) => { return { url: `/streams/alerts?since=${since}` }; },
   },
@@ -35,14 +35,12 @@ const ApiRoutes = {
     list: () => { return { url: '/system/content_packs/latest' }; },
     get: (contentPackId) => { return { url: `/system/content_packs/${contentPackId}` }; },
     getRev: (contentPackId, revision) => { return { url: `/system/content_packs/${contentPackId}/${revision}` }; },
-    downloadRev: (contentPackId, revision) => { return { url: `/system/content_packs/${contentPackId}/${revision}/download` }; },
     create: () => { return { url: '/system/content_packs' }; },
     delete: (contentPackId) => { return { url: `/system/content_packs/${contentPackId}` }; },
     deleteRev: (contentPackId, revision) => { return { url: `/system/content_packs/${contentPackId}/${revision}` }; },
     install: (contentPackId, revision) => { return { url: `/system/content_packs/${contentPackId}/${revision}/installations` }; },
     installList: (contentPackId) => { return { url: `/system/content_packs/${contentPackId}/installations` }; },
     uninstall: (contentPackId, installId) => { return { url: `/system/content_packs/${contentPackId}/installations/${installId}` }; },
-    uninstallDetails: (contentPackId, installId) => { return { url: `/system/content_packs/${contentPackId}/installations/${installId}/uninstall_details` }; },
   },
   CountsApiController: {
     total: () => { return { url: '/count/total' }; },
@@ -179,7 +177,6 @@ const ApiRoutes = {
     list: (streamId) => { return { url: `/streams/${streamId}/alerts/conditions` }; },
     update: (streamId, alertConditionId) => { return { url: `/streams/${streamId}/alerts/conditions/${alertConditionId}` }; },
     sendDummyAlert: (streamId) => { return { url: `/streams/${streamId}/alerts/sendDummyAlert` }; },
-    test: (streamId, conditionId) => { return { url: `/streams/${streamId}/alerts/conditions/${conditionId}/test` }; },
   },
   StreamsApiController: {
     index: () => { return { url: '/streams' }; },

@@ -116,21 +116,15 @@ const Graylog2Selector = Rickshaw.Class.create({
     }, false);
 
         // Stop at chart boundaries.
-    if (this._validateSeries(graph.series)) {
-      if (graph.dataDomain()[0] === position.xMin) {
-        graph.window.xMin = undefined;
-      }
-      if (graph.dataDomain()[1] === position.xMax) {
-        graph.window.xMax = undefined;
-      }
+    if (graph.dataDomain()[0] === position.xMin) {
+      graph.window.xMin = undefined;
+    }
+    if (graph.dataDomain()[1] === position.xMax) {
+      graph.window.xMax = undefined;
     }
 
     graph.window.xMin = position.xMin;
     graph.window.xMax = position.xMax;
-  },
-
-  _validateSeries(series) {
-    return series.map(s => s.data).find(data => !data || !data[0] || !data[0].x || !data[data.length - 1] || !data[data.length - 1].x) === undefined;
   },
 
   update() {

@@ -12,9 +12,15 @@ import ConfigurationHelper from 'components/sidecars/configuration-forms/Configu
 const SidecarNewConfigurationPage = createReactClass({
   displayName: 'SidecarNewConfigurationPage',
 
-  _variableRenameHandler(oldname, newname) {
-    this.configurationForm.replaceConfigurationVariableName(oldname, newname);
+  componentDidMount() {
+    this.style.use();
   },
+
+  componentWillUnmount() {
+    this.style.unuse();
+  },
+
+  style: require('!style/useable!css!components/sidecars/styles/SidecarStyles.css'),
 
   render() {
     return (
@@ -44,11 +50,10 @@ const SidecarNewConfigurationPage = createReactClass({
 
           <Row className="content">
             <Col md={6}>
-              <ConfigurationForm ref={(c) => { this.configurationForm = c; }}
-                                 action="create" />
+              <ConfigurationForm action="create" />
             </Col>
             <Col md={6}>
-              <ConfigurationHelper onVariableRename={this._variableRenameHandler} />
+              <ConfigurationHelper type="filebeat" />
             </Col>
           </Row>
         </span>

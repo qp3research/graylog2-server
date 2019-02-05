@@ -151,7 +151,7 @@ public class MongoIndexSet implements IndexSet {
         final Set<String> indexNames = indices.getIndexNamesAndAliases(getIndexWildcard()).keySet();
 
         if (indexNames.isEmpty()) {
-            throw new NoTargetIndexException("Couldn't find any indices for wildcard " + getIndexWildcard());
+            throw new NoTargetIndexException();
         }
 
         int highestIndexNumber = -1;
@@ -167,7 +167,7 @@ public class MongoIndexSet implements IndexSet {
         }
 
         if (highestIndexNumber == -1) {
-            throw new NoTargetIndexException("Couldn't get newest index number for indices " + indexNames);
+            throw new NoTargetIndexException();
         }
 
         return highestIndexNumber;

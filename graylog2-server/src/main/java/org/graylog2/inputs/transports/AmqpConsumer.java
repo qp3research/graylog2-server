@@ -16,12 +16,15 @@
  */
 package org.graylog2.inputs.transports;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
 import org.graylog2.plugin.inputs.MessageInput;
 import org.graylog2.plugin.journal.RawMessage;
 import org.slf4j.Logger;
@@ -92,7 +95,12 @@ public class AmqpConsumer {
         this.requeueInvalid = requeueInvalid;
         this.amqpTransport = amqpTransport;
 
-        scheduler.scheduleAtFixedRate(() -> lastSecBytesRead.set(lastSecBytesReadTmp.getAndSet(0)), 1, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                lastSecBytesRead.set(lastSecBytesReadTmp.getAndSet(0));
+            }
+        }, 1, 1, TimeUnit.SECONDS);
     }
 
     public void run() throws IOException {
@@ -148,8 +156,6 @@ public class AmqpConsumer {
         factory.setPort(port);
         factory.setVirtualHost(virtualHost);
         factory.setRequestedHeartbeat(heartbeatTimeout);
-        // explicitly setting this, to ensure it is true even if the default changes.
-        factory.setAutomaticRecoveryEnabled(true);
 
         if (tls) {
             try {
@@ -181,15 +187,35 @@ public class AmqpConsumer {
         if (null != channel && prefetchCount > 0) {
             channel.basicQos(prefetchCount);
 
-            LOG.debug("AMQP prefetch count overriden to <{}>.", prefetchCount);
+            LOG.info("AMQP prefetch count overriden to <{}>.", prefetchCount);
         }
 
-        connection.addShutdownListener(cause -> {
-            if (cause.isInitiatedByApplication()) {
-                LOG.info("Shutting down AMPQ consumer.");
-                return;
+        connection.addShutdownListener(new ShutdownListener() {
+            @Override
+            public void shutdownCompleted(ShutdownSignalException cause) {
+                if (cause.isInitiatedByApplication()) {
+                    LOG.info("Not reconnecting connection, we disconnected explicitly.");
+                    return;
+                }
+                while (true) {
+                    try {
+                        LOG.error("AMQP connection lost! Trying reconnect in 1 second.");
+
+                        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+                        connect();
+
+                        LOG.info("Connected! Re-starting consumer.");
+
+                        run();
+
+                        LOG.info("Consumer running.");
+                        break;
+                    } catch (IOException e) {
+                        LOG.error("Could not re-connect to AMQP broker.", e);
+                    }
+                }
             }
-            LOG.warn("AMQP connection lost! Reconnecting ...");
         });
     }
 

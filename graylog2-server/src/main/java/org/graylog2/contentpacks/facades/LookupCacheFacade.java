@@ -18,9 +18,6 @@ package org.graylog2.contentpacks.facades;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSet;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.model.ModelId;
 import org.graylog2.contentpacks.model.ModelType;
 import org.graylog2.contentpacks.model.ModelTypes;
@@ -30,9 +27,9 @@ import org.graylog2.contentpacks.model.entities.Entity;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.EntityExcerpt;
 import org.graylog2.contentpacks.model.entities.EntityV1;
+import org.graylog2.contentpacks.model.entities.EntityWithConstraints;
 import org.graylog2.contentpacks.model.entities.LookupCacheEntity;
 import org.graylog2.contentpacks.model.entities.NativeEntity;
-import org.graylog2.contentpacks.model.entities.NativeEntityDescriptor;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.jackson.TypeReferences;
 import org.graylog2.lookup.db.DBCacheService;
@@ -50,7 +47,7 @@ import static org.graylog2.contentpacks.model.entities.references.ReferenceMapUt
 import static org.graylog2.contentpacks.model.entities.references.ReferenceMapUtils.toValueMap;
 
 public class LookupCacheFacade implements EntityFacade<CacheDto> {
-    public static final ModelType TYPE_V1 = ModelTypes.LOOKUP_CACHE_V1;
+    public static final ModelType TYPE = ModelTypes.LOOKUP_CACHE;
 
     private final ObjectMapper objectMapper;
     private final DBCacheService cacheService;
@@ -65,8 +62,8 @@ public class LookupCacheFacade implements EntityFacade<CacheDto> {
         this.pluginMetaData = pluginMetaData;
     }
 
-    @VisibleForTesting
-    Entity exportNativeEntity(CacheDto cacheDto, EntityDescriptorIds entityDescriptorIds) {
+    @Override
+    public EntityWithConstraints exportNativeEntity(CacheDto cacheDto) {
         // TODO: Create independent representation of entity?
         final Map<String, Object> configuration = objectMapper.convertValue(cacheDto.config(), TypeReferences.MAP_STRING_OBJECT);
         final LookupCacheEntity lookupCacheEntity = LookupCacheEntity.create(
@@ -75,19 +72,19 @@ public class LookupCacheFacade implements EntityFacade<CacheDto> {
                 ValueReference.of(cacheDto.description()),
                 toReferenceMap(configuration));
         final JsonNode data = objectMapper.convertValue(lookupCacheEntity, JsonNode.class);
-        final Set<Constraint> constraints = versionConstraints(cacheDto);
-        return EntityV1.builder()
-                .id(ModelId.of(entityDescriptorIds.getOrThrow(cacheDto.id(), ModelTypes.LOOKUP_CACHE_V1)))
-                .type(ModelTypes.LOOKUP_CACHE_V1)
-                .constraints(ImmutableSet.copyOf(constraints))
+        final EntityV1 entity = EntityV1.builder()
+                .id(ModelId.of(cacheDto.id()))
+                .type(ModelTypes.LOOKUP_CACHE)
                 .data(data)
                 .build();
+        final Set<Constraint> constraints = versionConstraints(cacheDto);
+
+        return EntityWithConstraints.create(entity, constraints);
     }
 
     private Set<Constraint> versionConstraints(CacheDto cacheDto) {
         // TODO: Find more robust method of identifying the providing plugin
         final String packageName = cacheDto.config().getClass().getPackage().getName();
-
         return pluginMetaData.stream()
                 .filter(metaData -> packageName.startsWith(metaData.getClass().getPackage().getName()))
                 .map(PluginVersionConstraint::of)
@@ -117,7 +114,7 @@ public class LookupCacheFacade implements EntityFacade<CacheDto> {
                 .build();
 
         final CacheDto savedCacheDto = cacheService.save(cacheDto);
-        return NativeEntity.create(entity.id(), savedCacheDto.id(), TYPE_V1, savedCacheDto.title(), savedCacheDto);
+        return NativeEntity.create(savedCacheDto.name(), TYPE, savedCacheDto);
     }
 
     @Override
@@ -135,13 +132,7 @@ public class LookupCacheFacade implements EntityFacade<CacheDto> {
 
         final Optional<CacheDto> existingCache = cacheService.get(name);
 
-        return existingCache.map(cache -> NativeEntity.create(entity.id(), cache.id(), TYPE_V1, cache.title(), cache));
-    }
-
-    @Override
-    public Optional<NativeEntity<CacheDto>> loadNativeEntity(NativeEntityDescriptor nativeEntityDescriptor) {
-        return cacheService.get(nativeEntityDescriptor.id().id())
-                .map(entity -> NativeEntity.create(nativeEntityDescriptor, entity));
+        return existingCache.map(cache -> NativeEntity.create(cache.id(), TYPE, cache));
     }
 
     @Override
@@ -152,8 +143,8 @@ public class LookupCacheFacade implements EntityFacade<CacheDto> {
     @Override
     public EntityExcerpt createExcerpt(CacheDto cacheDto) {
         return EntityExcerpt.builder()
-                .id(ModelId.of(cacheDto.id()))
-                .type(ModelTypes.LOOKUP_CACHE_V1)
+                .id(ModelId.of(cacheDto.name()))
+                .type(ModelTypes.LOOKUP_CACHE)
                 .title(cacheDto.title())
                 .build();
     }
@@ -166,8 +157,8 @@ public class LookupCacheFacade implements EntityFacade<CacheDto> {
     }
 
     @Override
-    public Optional<Entity> exportEntity(EntityDescriptor entityDescriptor, EntityDescriptorIds entityDescriptorIds) {
+    public Optional<EntityWithConstraints> exportEntity(EntityDescriptor entityDescriptor) {
         final ModelId modelId = entityDescriptor.id();
-        return cacheService.get(modelId.id()).map(cacheDto -> exportNativeEntity(cacheDto, entityDescriptorIds));
+        return cacheService.get(modelId.id()).map(this::exportNativeEntity);
     }
 }

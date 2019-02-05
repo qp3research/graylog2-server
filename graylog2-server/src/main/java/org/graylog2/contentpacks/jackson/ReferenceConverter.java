@@ -53,9 +53,7 @@ public class ReferenceConverter extends StdConverter<JsonNode, Reference> {
                     return ValueReference.of(value.floatValue());
                 } else if (valueType == ValueType.INTEGER && value.isInt()) {
                     return ValueReference.of(value.intValue());
-                } else if (valueType == ValueType.LONG && (value.isLong() || value.isInt())) {
-                    //                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                    // Jackson actually creates an int value for a small number so we check for both (long and int value) here
+                } else if (valueType == ValueType.LONG && value.isLong()) {
                     return ValueReference.of(value.longValue());
                 } else if (valueType == ValueType.STRING && value.isTextual()) {
                     return ValueReference.of(value.textValue());

@@ -60,7 +60,6 @@ import org.joda.time.DateTimeZone;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -151,12 +150,7 @@ public class SidecarResource extends RestResource implements PluginRestResource 
                                         @DefaultValue("asc") @QueryParam("order") String order,
                                         @ApiParam(name = "only_active") @QueryParam("only_active") @DefaultValue("false") boolean onlyActive) {
         final String mappedQuery = sidecarStatusMapper.replaceStringStatusSearchQuery(query);
-        SearchQuery searchQuery;
-        try {
-            searchQuery = searchQueryParser.parse(mappedQuery);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid argument in search query: " + e.getMessage());
-        }
+        final SearchQuery searchQuery = searchQueryParser.parse(mappedQuery);
         final PaginatedList<Sidecar> sidecars = onlyActive ?
                 sidecarService.findPaginated(searchQuery, activeSidecarFilter, page, perPage, sort, order) :
                 sidecarService.findPaginated(searchQuery, page, perPage, sort, order);
@@ -176,10 +170,11 @@ public class SidecarResource extends RestResource implements PluginRestResource 
     public SidecarSummary get(@ApiParam(name = "sidecarId", required = true)
                               @PathParam("sidecarId") @NotEmpty String sidecarId) {
         final Sidecar sidecar = sidecarService.findByNodeId(sidecarId);
-        if (sidecar == null) {
-            throw new NotFoundException("Could not find sidecar <" + sidecarId + ">");
+        if (sidecar != null) {
+            return sidecar.toSummary(activeSidecarFilter);
+        } else {
+            throw new NotFoundException("Sidecar <" + sidecarId + "> not found!");
         }
-        return sidecar.toSummary(activeSidecarFilter);
     }
 
     @PUT

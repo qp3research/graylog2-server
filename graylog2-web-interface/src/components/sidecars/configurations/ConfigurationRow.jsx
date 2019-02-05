@@ -51,7 +51,7 @@ class ConfigurationRow extends React.Component {
                             title="More actions"
                             bsSize="xsmall"
                             pullRight>
-              <CopyConfigurationModal configuration={configuration}
+              <CopyConfigurationModal id={configuration.id}
                                       validateConfiguration={this.props.validateConfiguration}
                                       copyConfiguration={this.props.onCopy} />
               <MenuItem divider />

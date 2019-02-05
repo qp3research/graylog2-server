@@ -1,4 +1,4 @@
-:local(.listItemPadding) {
+:local(.listItem) {
     padding: 10px 5px;
 }
 

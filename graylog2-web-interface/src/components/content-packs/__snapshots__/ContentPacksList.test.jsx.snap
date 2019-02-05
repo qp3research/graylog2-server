@@ -36,8 +36,10 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 className="form-control"
                 id="content-packs-filter"
                 label="Filter"
+                onKeyPress={undefined}
                 placeholder=""
                 type="text"
+                value={undefined}
               />
               
             </div>
@@ -81,6 +83,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
       >
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -103,6 +106,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -125,6 +129,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className="active"
+          style={undefined}
         >
           <a
             href="#"
@@ -137,6 +142,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className=""
+          style={undefined}
         >
           <a
             href="#"
@@ -149,6 +155,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className=""
+          style={undefined}
         >
           <a
             href="#"
@@ -165,6 +172,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className=""
+          style={undefined}
         >
           <a
             href="#"
@@ -235,23 +243,20 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span>
-                  <a
-                    onClick={[Function]}
-                    style={Object {}}
-                  >
-                    <span
-                      className="badge installed"
-                    >
-                      installed
-                    </span>
-                  </a>
-                </span>
-                 
+                Version: 
               </small>
+              <div>
+                <span
+                  className="badge installed"
+                >
+                  installed
+                </span>
+                <span
+                  className="badge edited"
+                >
+                  edited
+                </span>
+              </div>
             </h3>
           </div>
           <div
@@ -296,6 +301,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -305,27 +326,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -335,25 +342,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -387,23 +375,9 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span>
-                  <a
-                    onClick={[Function]}
-                    style={Object {}}
-                  >
-                    <span
-                      className="badge installed"
-                    >
-                      installed
-                    </span>
-                  </a>
-                </span>
-                 
+                Version: 
               </small>
+              <div />
             </h3>
           </div>
           <div
@@ -448,6 +422,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -457,27 +447,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -487,25 +463,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -539,12 +496,15 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span />
-                 
+                Version: 
               </small>
+              <div>
+                <span
+                  className="badge installed"
+                >
+                  installed
+                </span>
+              </div>
             </h3>
           </div>
           <div
@@ -589,6 +549,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -598,27 +574,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -628,25 +590,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -680,12 +623,15 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span />
-                 
+                Version: 
               </small>
+              <div>
+                <span
+                  className="badge error"
+                >
+                  error
+                </span>
+              </div>
             </h3>
           </div>
           <div
@@ -730,6 +676,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -739,27 +701,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -769,25 +717,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -821,18 +750,32 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span />
-                 
+                Version: 
               </small>
+              <div>
+                <span
+                  className="badge installed"
+                >
+                  installed
+                </span>
+                <span
+                  className="badge updatable"
+                >
+                  updatable
+                </span>
+              </div>
             </h3>
           </div>
           <div
             className="text-right col-md-3"
           >
-            
+            <button
+              className="btn btn-sm btn-primary"
+              disabled={false}
+              type="button"
+            >
+              Update
+            </button>
              
             <button
               className="btn btn-sm btn-info"
@@ -871,6 +814,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -880,27 +839,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -910,25 +855,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -962,12 +888,20 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span />
-                 
+                Version: 
               </small>
+              <div>
+                <span
+                  className="badge installed"
+                >
+                  installed
+                </span>
+                <span
+                  className="badge edited"
+                >
+                  edited
+                </span>
+              </div>
             </h3>
           </div>
           <div
@@ -1012,6 +946,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -1021,27 +971,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -1051,25 +987,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -1103,12 +1020,9 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span />
-                 
+                Version: 
               </small>
+              <div />
             </h3>
           </div>
           <div
@@ -1153,6 +1067,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -1162,27 +1092,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -1192,25 +1108,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -1244,12 +1141,15 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span />
-                 
+                Version: 
               </small>
+              <div>
+                <span
+                  className="badge installed"
+                >
+                  installed
+                </span>
+              </div>
             </h3>
           </div>
           <div
@@ -1294,6 +1194,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -1303,27 +1219,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -1333,25 +1235,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -1385,12 +1268,15 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span />
-                 
+                Version: 
               </small>
+              <div>
+                <span
+                  className="badge error"
+                >
+                  error
+                </span>
+              </div>
             </h3>
           </div>
           <div
@@ -1435,6 +1321,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -1444,27 +1346,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -1474,25 +1362,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -1526,18 +1395,32 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
               />
                
               <small>
-                Latest Version: 
-                1
-                 
-                <span />
-                 
+                Version: 
               </small>
+              <div>
+                <span
+                  className="badge installed"
+                >
+                  installed
+                </span>
+                <span
+                  className="badge updatable"
+                >
+                  updatable
+                </span>
+              </div>
             </h3>
           </div>
           <div
             className="text-right col-md-3"
           >
-            
+            <button
+              className="btn btn-sm btn-primary"
+              disabled={false}
+              type="button"
+            >
+              Update
+            </button>
              
             <button
               className="btn btn-sm btn-info"
@@ -1576,6 +1459,22 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                 <li
                   className=""
                   role="presentation"
+                  style={undefined}
+                >
+                  <a
+                    href="#"
+                    onClick={[Function]}
+                    onKeyDown={[Function]}
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Remove all
+                  </a>
+                </li>
+                <li
+                  className=""
+                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     action="push"
@@ -1585,27 +1484,13 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     role="menuitem"
                     tabIndex="-1"
                   >
-                    Show
+                    Edit
                   </a>
                 </li>
                 <li
                   className=""
                   role="presentation"
-                >
-                  <a
-                    action="push"
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Create New Version
-                  </a>
-                </li>
-                <li
-                  className=""
-                  role="presentation"
+                  style={undefined}
                 >
                   <a
                     href="#"
@@ -1615,25 +1500,6 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
                     tabIndex="-1"
                   >
                     Download
-                  </a>
-                </li>
-                <li
-                  className="divider"
-                  onKeyDown={[Function]}
-                  role="separator"
-                />
-                <li
-                  className=""
-                  role="presentation"
-                >
-                  <a
-                    href="#"
-                    onClick={[Function]}
-                    onKeyDown={[Function]}
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Delete All Versions
                   </a>
                 </li>
               </ul>
@@ -1667,6 +1533,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
       >
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -1689,6 +1556,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -1711,6 +1579,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className="active"
+          style={undefined}
         >
           <a
             href="#"
@@ -1723,6 +1592,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className=""
+          style={undefined}
         >
           <a
             href="#"
@@ -1735,6 +1605,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className=""
+          style={undefined}
         >
           <a
             href="#"
@@ -1751,6 +1622,7 @@ exports[`<ContentPacksList /> should render with content packs 1`] = `
         </li>
         <li
           className=""
+          style={undefined}
         >
           <a
             href="#"
@@ -1831,8 +1703,10 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
                 className="form-control"
                 id="content-packs-filter"
                 label="Filter"
+                onKeyPress={undefined}
                 placeholder=""
                 type="text"
+                value={undefined}
               />
               
             </div>
@@ -1876,6 +1750,7 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
       >
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -1898,6 +1773,7 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
         </li>
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -1920,6 +1796,7 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
         </li>
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -1942,6 +1819,7 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
         </li>
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -2006,6 +1884,7 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
       >
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -2028,6 +1907,7 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
         </li>
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -2050,6 +1930,7 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
         </li>
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"
@@ -2072,6 +1953,7 @@ exports[`<ContentPacksList /> should render with empty content packs 1`] = `
         </li>
         <li
           className="disabled"
+          style={undefined}
         >
           <a
             href="#"

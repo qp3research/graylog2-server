@@ -27,15 +27,8 @@ const ContentPacksPage = createReactClass({
       ContentPacksActions.delete(contentPackId).then(() => {
         UserNotification.success('Content Pack deleted successfully.', 'Success');
         ContentPacksActions.list();
-      }, (error) => {
-        /* eslint-disable camelcase */
-        let err_message = error.message;
-        const err_body = error.additional.body;
-        /* eslint-enable camlecase */
-        if (err_body && err_body.message) {
-          err_message = error.additional.body.message;
-        }
-        UserNotification.error(`Deleting bundle failed: ${err_message}`, 'Error');
+      }, () => {
+        UserNotification.error('Deleting bundle failed, please check your logs for more information.', 'Error');
       });
     }
   },
@@ -72,7 +65,6 @@ const ContentPacksPage = createReactClass({
               <LinkContainer to={Routes.SYSTEM.CONTENTPACKS.CREATE}>
                 <Button bsStyle="success">Create a content pack</Button>
               </LinkContainer>
-              <Button bsStyle="info" active>Content Packs</Button>
             </ButtonToolbar>
           </PageHeader>
 
@@ -81,7 +73,6 @@ const ContentPacksPage = createReactClass({
               <div id="react-configuration-bundles">
                 <ContentPacksList
                   contentPacks={this.state.contentPacks}
-                  contentPackMetadata={this.state.contentPackMetadata}
                   onDeletePack={this._deleteContentPack}
                   onInstall={this._installContentPack}
                 />

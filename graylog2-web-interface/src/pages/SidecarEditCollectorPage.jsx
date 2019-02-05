@@ -6,7 +6,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import Routes from 'routing/Routes';
-import history from 'util/History';
 import CombinedProvider from 'injection/CombinedProvider';
 
 import CollectorForm from 'components/sidecars/configuration-forms/CollectorForm';
@@ -27,18 +26,22 @@ const SidecarEditCollectorPage = createReactClass({
   },
 
   componentDidMount() {
+    this.style.use();
     this._reloadCollector();
   },
 
+  componentWillUnmount() {
+    this.style.unuse();
+  },
+
+  style: require('!style/useable!css!components/sidecars/styles/SidecarStyles.css'),
+
   _reloadCollector() {
-    CollectorsActions.getCollector(this.props.params.collectorId).then(
-      collector => this.setState({ collector }),
-      (error) => {
-        if (error.status === 404) {
-          history.push(Routes.SYSTEM.SIDECARS.CONFIGURATION);
-        }
-      },
-    );
+    CollectorsActions.getCollector(this.props.params.collectorId).then(this._setCollector);
+  },
+
+  _setCollector(collector) {
+    this.setState({ collector });
   },
 
   _isLoading() {

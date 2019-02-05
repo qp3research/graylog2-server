@@ -18,10 +18,8 @@ package org.graylog2.contentpacks.facades;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import org.graylog.plugins.pipelineprocessor.db.RuleDao;
 import org.graylog.plugins.pipelineprocessor.db.RuleService;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.exceptions.DivergingEntityConfigurationException;
 import org.graylog2.contentpacks.model.ModelId;
 import org.graylog2.contentpacks.model.ModelType;
@@ -30,8 +28,8 @@ import org.graylog2.contentpacks.model.entities.Entity;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.EntityExcerpt;
 import org.graylog2.contentpacks.model.entities.EntityV1;
+import org.graylog2.contentpacks.model.entities.EntityWithConstraints;
 import org.graylog2.contentpacks.model.entities.NativeEntity;
-import org.graylog2.contentpacks.model.entities.NativeEntityDescriptor;
 import org.graylog2.contentpacks.model.entities.PipelineRuleEntity;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.database.NotFoundException;
@@ -49,7 +47,7 @@ import java.util.stream.Collectors;
 public class PipelineRuleFacade implements EntityFacade<RuleDao> {
     private static final Logger LOG = LoggerFactory.getLogger(PipelineRuleFacade.class);
 
-    public static final ModelType TYPE_V1 = ModelTypes.PIPELINE_RULE_V1;
+    public static final ModelType TYPE = ModelTypes.PIPELINE_RULE;
 
     private final ObjectMapper objectMapper;
     private final RuleService ruleService;
@@ -60,18 +58,19 @@ public class PipelineRuleFacade implements EntityFacade<RuleDao> {
         this.ruleService = ruleService;
     }
 
-    @VisibleForTesting
-    Entity exportNativeEntity(RuleDao ruleDao, EntityDescriptorIds entityDescriptorIds) {
+    @Override
+    public EntityWithConstraints exportNativeEntity(RuleDao ruleDao) {
         final PipelineRuleEntity ruleEntity = PipelineRuleEntity.create(
                 ValueReference.of(ruleDao.title()),
                 ValueReference.of(ruleDao.description()),
                 ValueReference.of(ruleDao.source()));
         final JsonNode data = objectMapper.convertValue(ruleEntity, JsonNode.class);
-        return EntityV1.builder()
-                .id(ModelId.of(entityDescriptorIds.getOrThrow(ruleDao.id(), ModelTypes.PIPELINE_RULE_V1)))
-                .type(ModelTypes.PIPELINE_RULE_V1)
+        final EntityV1 entity = EntityV1.builder()
+                .id(ModelId.of(ruleDao.title()))
+                .type(ModelTypes.PIPELINE_RULE)
                 .data(data)
                 .build();
+        return EntityWithConstraints.create(entity);
     }
 
     @Override
@@ -102,17 +101,7 @@ public class PipelineRuleFacade implements EntityFacade<RuleDao> {
                 .build();
 
         final RuleDao savedRuleDao = ruleService.save(ruleDao);
-        return NativeEntity.create(entity.id(), savedRuleDao.id(), TYPE_V1, savedRuleDao.title(), savedRuleDao);
-    }
-
-    @Override
-    public Optional<NativeEntity<RuleDao>> loadNativeEntity(NativeEntityDescriptor nativeEntityDescriptor) {
-        try {
-            final RuleDao ruleDao = ruleService.load(nativeEntityDescriptor.id().id());
-            return Optional.of(NativeEntity.create(nativeEntityDescriptor, ruleDao));
-        } catch (NotFoundException e) {
-            return Optional.empty();
-        }
+        return NativeEntity.create(savedRuleDao.id(), TYPE, savedRuleDao);
     }
 
     @Override
@@ -139,7 +128,7 @@ public class PipelineRuleFacade implements EntityFacade<RuleDao> {
             final RuleDao ruleDao = ruleService.loadByName(title);
             compareRuleSources(title, source, ruleDao.source());
 
-            return Optional.of(NativeEntity.create(entity.id(), ruleDao.id(), TYPE_V1, ruleDao.title(), ruleDao));
+            return Optional.of(NativeEntity.create(ruleDao.id(), TYPE, ruleDao));
         } catch (NotFoundException e) {
             return Optional.empty();
         }
@@ -155,8 +144,8 @@ public class PipelineRuleFacade implements EntityFacade<RuleDao> {
     @Override
     public EntityExcerpt createExcerpt(RuleDao ruleDao) {
         return EntityExcerpt.builder()
-                .id(ModelId.of(ruleDao.id()))
-                .type(ModelTypes.PIPELINE_RULE_V1)
+                .id(ModelId.of(ruleDao.title()))
+                .type(ModelTypes.PIPELINE_RULE)
                 .title(ruleDao.title())
                 .build();
     }
@@ -169,11 +158,11 @@ public class PipelineRuleFacade implements EntityFacade<RuleDao> {
     }
 
     @Override
-    public Optional<Entity> exportEntity(EntityDescriptor entityDescriptor, EntityDescriptorIds entityDescriptorIds) {
+    public Optional<EntityWithConstraints> exportEntity(EntityDescriptor entityDescriptor) {
         final ModelId modelId = entityDescriptor.id();
         try {
-            final RuleDao ruleDao = ruleService.load(modelId.id());
-            return Optional.of(exportNativeEntity(ruleDao, entityDescriptorIds));
+            final RuleDao ruleDao = ruleService.loadByName(modelId.id());
+            return Optional.of(exportNativeEntity(ruleDao));
         } catch (NotFoundException e) {
             LOG.debug("Couldn't find pipeline rule {}", entityDescriptor, e);
             return Optional.empty();

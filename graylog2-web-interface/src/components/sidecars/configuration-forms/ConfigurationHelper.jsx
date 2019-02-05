@@ -1,14 +1,29 @@
 import PropTypes from 'prop-types';
+import lodash from 'lodash';
 import React from 'react';
-import { Col, Panel, Row, Tab, Tabs } from 'react-bootstrap';
+import { Col, MenuItem, Nav, Navbar, NavDropdown, Panel, Row, Tab, Tabs } from 'react-bootstrap';
 
+import DocumentationLink from 'components/support/DocumentationLink';
+import DocsHelper from 'util/DocsHelper';
+
+import FilebeatHelper from './FilebeatHelper';
 import TemplatesHelper from './TemplatesHelper';
-import ConfigurationVariablesHelper from './ConfigurationVariablesHelper';
+import IncludesHelper from './IncludesHelper';
 import ConfigurationHelperStyle from './ConfigurationHelper.css';
 
 class ConfigurationHelper extends React.Component {
   static propTypes = {
-    onVariableRename: PropTypes.func.isRequired,
+    type: PropTypes.string.isRequired,
+  };
+
+  state = {
+    section: undefined,
+    paragraph: undefined,
+  };
+
+  _onSelect = (event) => {
+    const newState = event.split('.');
+    this.setState({ section: newState[0], paragraph: newState[1] });
   };
 
   _getId = (idName, index) => {
@@ -16,51 +31,77 @@ class ConfigurationHelper extends React.Component {
     return idName + idIndex;
   };
 
+  _getEventKey = (a, b) => {
+    return (`${a}.${b}`);
+  };
+
+  navDropDowns = (content) => {
+    const dropDowns = [];
+    Object.keys(content).forEach((section) => {
+      if (!Object.prototype.hasOwnProperty.call(content, section)) {
+        return undefined;
+      }
+
+      const paragraphs = content[section];
+      const menuItems = [];
+
+      for (let i = 0; i < paragraphs.length; i += 1) {
+        menuItems.push(
+          <MenuItem key={this._getId(section,i)} eventKey={this._getEventKey(section, paragraphs[i])}>{lodash.capitalize(paragraphs[i])}</MenuItem>,
+        );
+      }
+      dropDowns.push(
+        <NavDropdown key={this._getId(section)} title={lodash.capitalize(section)} id="basic-nav-dropdown">
+          {menuItems}
+        </NavDropdown>,
+      );
+    });
+
+    return dropDowns;
+  };
+
   render() {
     return (
-      /* eslint-disable no-template-curly-in-string */
-      <Panel header="Collector Configuration Reference">
+      <Panel header="Filebeat quick reference">
+        <Row className="row-sm">
+          <Col md={12}>
+            <p className={ConfigurationHelperStyle.marginQuickReferenceText}>
+              Read the <DocumentationLink page={DocsHelper.PAGES.PIPELINE_RULES}
+                                          text="full documentation" />{' '}
+              to gain a better understanding of how the Filebeat collector work.
+            </p>
+          </Col>
+        </Row>
 
         <Row className="row-sm">
           <Col md={12}>
             <Tabs id="configurationsHelper" defaultActiveKey={1} animation={false}>
-              <Tab eventKey={1} title="Runtime Variables">
-                <p className={ConfigurationHelperStyle.marginQuickReferenceText}>
-                  These variables will be filled with the runtime information from each Sidecar
-                </p>
+              <Tab eventKey={1} title="Reference">
+                <br />
+                <Navbar collapseOnSelect>
+                  <Navbar.Collapse>
+                    <Nav onSelect={this._onSelect}>
+                      {this.navDropDowns(FilebeatHelper.toc)}
+                    </Nav>
+                  </Navbar.Collapse>
+                </Navbar>
+                <Panel>
+                  <FilebeatHelper section={this.state.section} paragraph={this.state.paragraph} />
+                </Panel>
+              </Tab>
+              <Tab eventKey={2} title="Templates">
+                <br />
                 <TemplatesHelper />
               </Tab>
-              <Tab eventKey={2} title="Variables">
-                <p className={ConfigurationHelperStyle.marginQuickReferenceText}>
-                  Use variables to share text snippets across multiple configurations.
-                  <br />
-                  If your configuration format needs to use literals like <code>$&#123;foo&#125;</code>,
-                  which shall not act as a variable, you will have to write it as
-                  <code>$&#123;&apos;$&apos;&#125;&#123;foo&#125;</code>.
-                </p>
-                <ConfigurationVariablesHelper onVariableRename={this.props.onVariableRename} />
-              </Tab>
-              <Tab eventKey={3} title="Reference">
-                <Row className="row-sm">
-                  <Col md={12}>
-                    <p className={ConfigurationHelperStyle.marginQuickReferenceText}>
-                      We provide collector configuration templates to get you started.<br />
-                      For further information please refer to the official documentation of your collector.
-                      <ul className={ConfigurationHelperStyle.ulStyle}>
-                        <li><a href="https://www.elastic.co/guide/en/beats/filebeat/current/index.html" target="_blank" rel="noopener noreferrer">Filebeat Reference</a> </li>
-                        <li><a href="https://www.elastic.co/guide/en/beats/winlogbeat/current/index.html" target="_blank" rel="noopener noreferrer">Winlogbeat Reference</a> </li>
-                        <li><a href="https://nxlog.co/docs/nxlog-ce/nxlog-reference-manual.html" target="_blank" rel="noopener noreferrer">NXLog Reference Manual</a> </li>
-                      </ul>
-                    </p>
-                  </Col>
-                </Row>
+              <Tab eventKey={3} title="Includes">
+                <br />
+                <IncludesHelper />
               </Tab>
             </Tabs>
           </Col>
         </Row>
       </Panel>
     );
-    /* eslint-enable no-template-curly-in-string */
   }
 }
 

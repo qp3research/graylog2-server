@@ -1,11 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import ContentPack from 'logic/content-packs/ContentPack';
-
 import { Row, Col } from 'react-bootstrap';
 import { Input } from 'components/bootstrap';
-import ValueRefHelper from 'util/ValueRefHelper';
 import ContentPackUtils from './ContentPackUtils';
 
 import ContentPackEntitiesList from './ContentPackEntitiesList';
@@ -54,7 +51,7 @@ class ContentPackInstall extends React.Component {
       const newResult = result;
       const paramType = this.props.contentPack.parameters.find(parameter => parameter.name === paramName).type;
       const value = ContentPackUtils.convertValue(paramType, this.state.parameterInput[paramName]);
-      newResult[paramName] = ValueRefHelper.createValueRef(paramType, value);
+      newResult[paramName] = { type: paramType, value: value };
       return newResult;
     }, {});
   };
@@ -106,11 +103,9 @@ class ContentPackInstall extends React.Component {
     const parameterInput = this.props.contentPack.parameters.map((parameter) => {
       return this.renderParameter(parameter);
     });
-    const contentPack = ContentPack.fromJSON(this.props.contentPack);
-
     return (<div>
       <Row>
-        <Col smOffset={1} sm={10}>
+        <Col smOffset={1}>
           <h2>Install comment</h2>
           <br />
           <br />
@@ -128,7 +123,7 @@ class ContentPackInstall extends React.Component {
       </Row>
       {parameterInput.length > 0 &&
       <Row>
-        <Col smOffset={1} sm={10}>
+        <Col smOffset={1}>
           <h2>Configure Parameter</h2>
           <br />
           <br />
@@ -137,7 +132,7 @@ class ContentPackInstall extends React.Component {
       </Row>}
       <Row>
         <Col smOffset={1} sm={10}>
-          <ContentPackEntitiesList contentPack={contentPack} readOnly />
+          <ContentPackEntitiesList contentPack={this.props.contentPack} readOnly />
         </Col>
       </Row>
     </div>);

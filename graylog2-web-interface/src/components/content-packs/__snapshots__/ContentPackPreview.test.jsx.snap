@@ -29,15 +29,12 @@ exports[`<ContentPackPreview /> should render with empty content pack 1`] = `
                   Version:
                 </dt>
                  
-                <dd>
-                  1
-                </dd>
+                <dd />
                 <dt>
                   Name:
                 </dt>
                  
                 <dd>
-                  
                    
                 </dd>
                 <dt>
@@ -45,7 +42,6 @@ exports[`<ContentPackPreview /> should render with empty content pack 1`] = `
                 </dt>
                  
                 <dd>
-                  
                    
                 </dd>
                 <dt>
@@ -53,7 +49,6 @@ exports[`<ContentPackPreview /> should render with empty content pack 1`] = `
                 </dt>
                  
                 <dd>
-                  
                    
                 </dd>
                 <dt>
@@ -62,44 +57,27 @@ exports[`<ContentPackPreview /> should render with empty content pack 1`] = `
                  
                 <dd>
                   <a
-                    href=""
-                  >
-                    
-                  </a>
+                    href={undefined}
+                  />
                    
                 </dd>
-                <span>
-                  <dt>
-                    ID:
-                  </dt>
-                   
-                  <dd>
-                    <code>
-                      dead-beef
-                    </code>
-                  </dd>
-                </span>
-                <span>
-                  <dt>
-                    Parameters:
-                  </dt>
-                   
-                  <dd>
-                    0
-                  </dd>
-                </span>
-                <span>
-                  <dt>
-                    Entities:
-                  </dt>
-                   
-                  <dd>
-                    0
-                  </dd>
-                </span>
               </dl>
             </div>
-            
+            <h2>
+              Description
+            </h2>
+            <br />
+            <div
+              className="well"
+            >
+              <div
+                dangerouslySetInnerHTML={
+                  Object {
+                    "__html": "",
+                  }
+                }
+              />
+            </div>
             <br />
             <br />
             <br />
@@ -135,186 +113,6 @@ exports[`<ContentPackPreview /> should render with empty content pack 1`] = `
           </div>
         </div>
       </div>
-      <div>
-        <h2>
-          Entity list
-        </h2>
-        <br />
-        <div
-          className="search"
-          style={
-            Object {
-              "marginTop": 15,
-            }
-          }
-        >
-          <form
-            className="form-inline"
-            onSubmit={[Function]}
-          >
-            <div
-              className="form-group has-feedback"
-            >
-              <input
-                autoComplete="off"
-                className="query form-control"
-                id="common-search-form-query-input"
-                onChange={[Function]}
-                placeholder="Enter search query..."
-                spellCheck="false"
-                style={
-                  Object {
-                    "width": "auto",
-                  }
-                }
-                type="text"
-                value=""
-              />
-            </div>
-            <div
-              className="form-group"
-              style={
-                Object {
-                  "marginLeft": 5,
-                }
-              }
-            >
-              <button
-                className="submit-button btn btn-default"
-                disabled={false}
-                type="submit"
-              >
-                Filter
-              </button>
-            </div>
-            <div
-              className="form-group"
-              style={
-                Object {
-                  "marginLeft": 5,
-                }
-              }
-            >
-              <button
-                className="reset-button btn btn-default"
-                disabled={false}
-                onClick={[Function]}
-                type="reset"
-              >
-                Reset
-              </button>
-            </div>
-          </form>
-        </div>
-        <div>
-          <div
-            className="row "
-          >
-            <div
-              className="col-md-12"
-            >
-              <div
-                className="data-table table-responsive"
-                id="entity-list"
-              >
-                <p>
-                  No data available.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h2>
-          Parameters list
-        </h2>
-        <br />
-        <div
-          className="search"
-          style={
-            Object {
-              "marginTop": 15,
-            }
-          }
-        >
-          <form
-            className="form-inline"
-            onSubmit={[Function]}
-          >
-            <div
-              className="form-group has-feedback"
-            >
-              <input
-                autoComplete="off"
-                className="query form-control"
-                id="common-search-form-query-input"
-                onChange={[Function]}
-                placeholder="Enter search query..."
-                spellCheck="false"
-                style={
-                  Object {
-                    "width": "auto",
-                  }
-                }
-                type="text"
-                value=""
-              />
-            </div>
-            <div
-              className="form-group"
-              style={
-                Object {
-                  "marginLeft": 5,
-                }
-              }
-            >
-              <button
-                className="submit-button btn btn-default"
-                disabled={false}
-                type="submit"
-              >
-                Filter
-              </button>
-            </div>
-            <div
-              className="form-group"
-              style={
-                Object {
-                  "marginLeft": 5,
-                }
-              }
-            >
-              <button
-                className="reset-button btn btn-default"
-                disabled={false}
-                onClick={[Function]}
-                type="reset"
-              >
-                Reset
-              </button>
-            </div>
-          </form>
-        </div>
-        <div>
-          <div
-            className="row "
-          >
-            <div
-              className="col-md-12"
-            >
-              <div
-                className="data-table table-responsive"
-                id="parameter-list"
-              >
-                <p>
-                  To use parameters for content packs, at first a parameter must be created and can then be applied to a entity.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <div
@@ -334,17 +132,16 @@ exports[`<ContentPackPreview /> should render with empty content pack 1`] = `
       </button>
        
       <a
-        download="content-pack-dead-beef-1.json"
-        href="data:text/plain;charset=utf-8,%7B%0A%20%20%22v%22%3A%201%2C%0A%20%20%22id%22%3A%20%22dead-beef%22%2C%0A%20%20%22rev%22%3A%201%2C%0A%20%20%22name%22%3A%20%22%22%2C%0A%20%20%22summary%22%3A%20%22%22%2C%0A%20%20%22description%22%3A%20%22%22%2C%0A%20%20%22vendor%22%3A%20%22%22%2C%0A%20%20%22url%22%3A%20%22%22%2C%0A%20%20%22parameters%22%3A%20%5B%5D%2C%0A%20%20%22entities%22%3A%20%5B%5D%0A%7D"
+        download="content-pack-undefined-undefined.json"
+        href="data:text/plain;charset=utf-8,%7B%7D"
       >
         <button
           className="btn btn-info"
           disabled={false}
           id="download"
-          onClick={[Function]}
           type="button"
         >
-          Create and Download
+          Download
         </button>
       </a>
     </div>
@@ -381,9 +178,7 @@ exports[`<ContentPackPreview /> should render with filled content pack 1`] = `
                   Version:
                 </dt>
                  
-                <dd>
-                  1
-                </dd>
+                <dd />
                 <dt>
                   Name:
                 </dt>
@@ -397,7 +192,7 @@ exports[`<ContentPackPreview /> should render with filled content pack 1`] = `
                 </dt>
                  
                 <dd>
-                  summary
+                  summmary
                    
                 </dd>
                 <dt>
@@ -420,53 +215,22 @@ exports[`<ContentPackPreview /> should render with filled content pack 1`] = `
                   </a>
                    
                 </dd>
-                <span>
-                  <dt>
-                    ID:
-                  </dt>
-                   
-                  <dd>
-                    <code>
-                      dead-beef
-                    </code>
-                  </dd>
-                </span>
-                <span>
-                  <dt>
-                    Parameters:
-                  </dt>
-                   
-                  <dd>
-                    0
-                  </dd>
-                </span>
-                <span>
-                  <dt>
-                    Entities:
-                  </dt>
-                   
-                  <dd>
-                    0
-                  </dd>
-                </span>
               </dl>
             </div>
-            <div>
-              <h2>
-                Description
-              </h2>
-              <br />
+            <h2>
+              Description
+            </h2>
+            <br />
+            <div
+              className="well"
+            >
               <div
-                className="well"
-              >
-                <div
-                  dangerouslySetInnerHTML={
-                    Object {
-                      "__html": "<p>descr</p>",
-                    }
+                dangerouslySetInnerHTML={
+                  Object {
+                    "__html": "<p>descr</p>",
                   }
-                />
-              </div>
+                }
+              />
             </div>
             <br />
             <br />
@@ -503,186 +267,6 @@ exports[`<ContentPackPreview /> should render with filled content pack 1`] = `
           </div>
         </div>
       </div>
-      <div>
-        <h2>
-          Entity list
-        </h2>
-        <br />
-        <div
-          className="search"
-          style={
-            Object {
-              "marginTop": 15,
-            }
-          }
-        >
-          <form
-            className="form-inline"
-            onSubmit={[Function]}
-          >
-            <div
-              className="form-group has-feedback"
-            >
-              <input
-                autoComplete="off"
-                className="query form-control"
-                id="common-search-form-query-input"
-                onChange={[Function]}
-                placeholder="Enter search query..."
-                spellCheck="false"
-                style={
-                  Object {
-                    "width": "auto",
-                  }
-                }
-                type="text"
-                value=""
-              />
-            </div>
-            <div
-              className="form-group"
-              style={
-                Object {
-                  "marginLeft": 5,
-                }
-              }
-            >
-              <button
-                className="submit-button btn btn-default"
-                disabled={false}
-                type="submit"
-              >
-                Filter
-              </button>
-            </div>
-            <div
-              className="form-group"
-              style={
-                Object {
-                  "marginLeft": 5,
-                }
-              }
-            >
-              <button
-                className="reset-button btn btn-default"
-                disabled={false}
-                onClick={[Function]}
-                type="reset"
-              >
-                Reset
-              </button>
-            </div>
-          </form>
-        </div>
-        <div>
-          <div
-            className="row "
-          >
-            <div
-              className="col-md-12"
-            >
-              <div
-                className="data-table table-responsive"
-                id="entity-list"
-              >
-                <p>
-                  No data available.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h2>
-          Parameters list
-        </h2>
-        <br />
-        <div
-          className="search"
-          style={
-            Object {
-              "marginTop": 15,
-            }
-          }
-        >
-          <form
-            className="form-inline"
-            onSubmit={[Function]}
-          >
-            <div
-              className="form-group has-feedback"
-            >
-              <input
-                autoComplete="off"
-                className="query form-control"
-                id="common-search-form-query-input"
-                onChange={[Function]}
-                placeholder="Enter search query..."
-                spellCheck="false"
-                style={
-                  Object {
-                    "width": "auto",
-                  }
-                }
-                type="text"
-                value=""
-              />
-            </div>
-            <div
-              className="form-group"
-              style={
-                Object {
-                  "marginLeft": 5,
-                }
-              }
-            >
-              <button
-                className="submit-button btn btn-default"
-                disabled={false}
-                type="submit"
-              >
-                Filter
-              </button>
-            </div>
-            <div
-              className="form-group"
-              style={
-                Object {
-                  "marginLeft": 5,
-                }
-              }
-            >
-              <button
-                className="reset-button btn btn-default"
-                disabled={false}
-                onClick={[Function]}
-                type="reset"
-              >
-                Reset
-              </button>
-            </div>
-          </form>
-        </div>
-        <div>
-          <div
-            className="row "
-          >
-            <div
-              className="col-md-12"
-            >
-              <div
-                className="data-table table-responsive"
-                id="parameter-list"
-              >
-                <p>
-                  To use parameters for content packs, at first a parameter must be created and can then be applied to a entity.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <div
@@ -702,17 +286,16 @@ exports[`<ContentPackPreview /> should render with filled content pack 1`] = `
       </button>
        
       <a
-        download="content-pack-dead-beef-1.json"
-        href="data:text/plain;charset=utf-8,%7B%0A%20%20%22v%22%3A%201%2C%0A%20%20%22id%22%3A%20%22dead-beef%22%2C%0A%20%20%22rev%22%3A%201%2C%0A%20%20%22name%22%3A%20%22name%22%2C%0A%20%20%22summary%22%3A%20%22summary%22%2C%0A%20%20%22description%22%3A%20%22descr%22%2C%0A%20%20%22vendor%22%3A%20%22vendor%22%2C%0A%20%20%22url%22%3A%20%22http%3A%2F%2Fexample.com%22%2C%0A%20%20%22parameters%22%3A%20%5B%5D%2C%0A%20%20%22entities%22%3A%20%5B%5D%0A%7D"
+        download="content-pack-undefined-undefined.json"
+        href="data:text/plain;charset=utf-8,%7B%0A%20%20%22name%22%3A%20%22name%22%2C%0A%20%20%22summary%22%3A%20%22summmary%22%2C%0A%20%20%22description%22%3A%20%22descr%22%2C%0A%20%20%22vendor%22%3A%20%22vendor%22%2C%0A%20%20%22url%22%3A%20%22http%3A%2F%2Fexample.com%22%2C%0A%20%20%22parameters%22%3A%20%5B%5D%0A%7D"
       >
         <button
           className="btn btn-info"
           disabled={false}
           id="download"
-          onClick={[Function]}
           type="button"
         >
-          Create and Download
+          Download
         </button>
       </a>
     </div>

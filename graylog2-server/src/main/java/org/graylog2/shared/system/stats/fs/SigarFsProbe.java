@@ -44,7 +44,6 @@ public class SigarFsProbe implements FsProbe {
         this.locations = ImmutableSet.of(
                 configuration.getBinDir(),
                 configuration.getDataDir(),
-                configuration.getPluginDir(),
                 kafkaJournalConfiguration.getMessageJournalDir()
         );
     }
@@ -70,8 +69,6 @@ public class SigarFsProbe implements FsProbe {
 
                 String mount = null;
                 String dev = null;
-                String typeName = null;
-                String sysTypeName = null;
                 long total = -1;
                 long free = -1;
                 long available = -1;
@@ -90,8 +87,6 @@ public class SigarFsProbe implements FsProbe {
                 if (fileSystem != null) {
                     mount = fileSystem.getDirName();
                     dev = fileSystem.getDevName();
-                    typeName = fileSystem.getTypeName();
-                    sysTypeName = fileSystem.getSysTypeName();
 
                     final FileSystemUsage fileSystemUsage = sigar.getFileSystemUsage(mount);
                     if (fileSystemUsage != null) {
@@ -116,7 +111,7 @@ public class SigarFsProbe implements FsProbe {
                 }
 
                 final FsStats.Filesystem filesystem = FsStats.Filesystem.create(
-                        path, mount, dev, typeName, sysTypeName, total, free, available, used, usedPercent,
+                        path, mount, dev, total, free, available, used, usedPercent,
                         inodesTotal, inodesFree, inodesUsed, inodesUsedPercent,
                         diskReads, diskWrites, diskReadBytes, diskWriteBytes, diskQueue, diskServiceTime
                 );

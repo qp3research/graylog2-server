@@ -16,7 +16,6 @@
  */
 package org.graylog2.shared.inputs;
 
-import org.graylog2.plugin.configuration.ConfigurationRequest;
 import org.graylog2.plugin.inputs.MessageInput;
 
 import java.util.Map;
@@ -44,9 +43,5 @@ public class InputDescription {
 
     public Map<String, Map<String, Object>> getRequestedConfiguration() {
         return config.combinedRequestedConfiguration().asList();
-    }
-
-    public ConfigurationRequest getConfigurationRequest() {
-        return config.combinedRequestedConfiguration();
     }
 }

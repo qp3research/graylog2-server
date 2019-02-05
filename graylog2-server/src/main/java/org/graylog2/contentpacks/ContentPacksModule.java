@@ -18,8 +18,8 @@ package org.graylog2.contentpacks;
 
 import org.graylog2.contentpacks.constraints.GraylogVersionConstraintChecker;
 import org.graylog2.contentpacks.constraints.PluginVersionConstraintChecker;
-import org.graylog2.contentpacks.facades.SidecarCollectorConfigurationFacade;
-import org.graylog2.contentpacks.facades.SidecarCollectorFacade;
+import org.graylog2.contentpacks.facades.CollectorConfigurationFacade;
+import org.graylog2.contentpacks.facades.CollectorFacade;
 import org.graylog2.contentpacks.facades.DashboardFacade;
 import org.graylog2.contentpacks.facades.GrokPatternFacade;
 import org.graylog2.contentpacks.facades.InputFacade;
@@ -43,19 +43,19 @@ public class ContentPacksModule extends PluginModule {
 
         jerseyAdditionalComponentsBinder().addBinding().toInstance(ModelIdParamConverter.Provider.class);
 
-        addEntityFacade(SidecarCollectorConfigurationFacade.TYPE_V1, SidecarCollectorConfigurationFacade.class);
-        addEntityFacade(SidecarCollectorFacade.TYPE_V1, SidecarCollectorFacade.class);
-        addEntityFacade(DashboardFacade.TYPE_V1, DashboardFacade.class);
-        addEntityFacade(GrokPatternFacade.TYPE_V1, GrokPatternFacade.class);
-        addEntityFacade(InputFacade.TYPE_V1, InputFacade.class);
-        addEntityFacade(LookupCacheFacade.TYPE_V1, LookupCacheFacade.class);
-        addEntityFacade(LookupDataAdapterFacade.TYPE_V1, LookupDataAdapterFacade.class);
-        addEntityFacade(LookupTableFacade.TYPE_V1, LookupTableFacade.class);
-        addEntityFacade(OutputFacade.TYPE_V1, OutputFacade.class);
-        addEntityFacade(PipelineFacade.TYPE_V1, PipelineFacade.class);
-        addEntityFacade(PipelineRuleFacade.TYPE_V1, PipelineRuleFacade.class);
+        addEntityFacade(CollectorConfigurationFacade.TYPE, CollectorConfigurationFacade.class);
+        addEntityFacade(CollectorFacade.TYPE, CollectorFacade.class);
+        addEntityFacade(DashboardFacade.TYPE, DashboardFacade.class);
+        addEntityFacade(GrokPatternFacade.TYPE, GrokPatternFacade.class);
+        addEntityFacade(InputFacade.TYPE, InputFacade.class);
+        addEntityFacade(LookupCacheFacade.TYPE, LookupCacheFacade.class);
+        addEntityFacade(LookupDataAdapterFacade.TYPE, LookupDataAdapterFacade.class);
+        addEntityFacade(LookupTableFacade.TYPE, LookupTableFacade.class);
+        addEntityFacade(OutputFacade.TYPE, OutputFacade.class);
+        addEntityFacade(PipelineFacade.TYPE, PipelineFacade.class);
+        addEntityFacade(PipelineRuleFacade.TYPE, PipelineRuleFacade.class);
         addEntityFacade(RootEntityFacade.TYPE, RootEntityFacade.class);
-        addEntityFacade(StreamFacade.TYPE_V1, StreamFacade.class);
+        addEntityFacade(StreamFacade.TYPE, StreamFacade.class);
 
         addConstraintChecker(GraylogVersionConstraintChecker.class);
         addConstraintChecker(PluginVersionConstraintChecker.class);

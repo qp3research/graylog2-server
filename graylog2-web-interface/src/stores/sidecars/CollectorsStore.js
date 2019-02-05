@@ -1,6 +1,5 @@
 import Reflux from 'reflux';
 import URI from 'urijs';
-import lodash from 'lodash';
 
 import URLUtils from 'util/URLUtils';
 import fetch from 'logic/rest/FetchProvider';
@@ -40,13 +39,12 @@ const CollectorsStore = Reflux.createStore({
 
   getCollector(collectorId) {
     const promise = fetch('GET', URLUtils.qualifyUrl(`${this.sourceUrl}/collectors/${collectorId}`));
-    promise.catch((error) => {
-      let errorMessage = `Fetching Collector failed with status: ${error}`;
-      if (error.status === 404) {
-        errorMessage = `Unable to find a collector with ID <${collectorId}>, please ensure it was not deleted.`;
-      }
-      UserNotification.error(errorMessage, 'Could not retrieve Collector');
-    });
+    promise
+      .catch(
+        (error) => {
+          UserNotification.error(`Fetching collector failed with status: ${error}`,
+            'Could not retrieve collector');
+        });
     CollectorsActions.getCollector.promise(promise);
   },
 
@@ -63,8 +61,7 @@ const CollectorsStore = Reflux.createStore({
   },
 
   all() {
-    const promise = this._fetchCollectors({ pageSize: 0 });
-    promise
+    const promise = this._fetchCollectors({ pageSize: 0 })
       .then(
         (response) => {
           this.collectors = response.collectors;
@@ -80,8 +77,7 @@ const CollectorsStore = Reflux.createStore({
   },
 
   list({ query = '', page = 1, pageSize = 10 }) {
-    const promise = this._fetchCollectors({ query: query, page: page, pageSize: pageSize });
-    promise
+    const promise = this._fetchCollectors({ query: query, page: page, pageSize: pageSize })
       .then(
         (response) => {
           this.query = response.query;
@@ -109,8 +105,7 @@ const CollectorsStore = Reflux.createStore({
   },
 
   create(collector) {
-    const promise = fetch('POST', URLUtils.qualifyUrl(`${this.sourceUrl}/collectors`), collector);
-    promise
+    const promise = fetch('POST', URLUtils.qualifyUrl(`${this.sourceUrl}/collectors`), collector)
       .then(
         (response) => {
           UserNotification.success('', 'Collector successfully created');
@@ -127,8 +122,7 @@ const CollectorsStore = Reflux.createStore({
   },
 
   update(collector) {
-    const promise = fetch('PUT', URLUtils.qualifyUrl(`${this.sourceUrl}/collectors/${collector.id}`), collector);
-    promise
+    const promise = fetch('PUT', URLUtils.qualifyUrl(`${this.sourceUrl}/collectors/${collector.id}`), collector)
       .then(
         (response) => {
           UserNotification.success('', 'Collector successfully updated');
@@ -153,8 +147,8 @@ const CollectorsStore = Reflux.createStore({
         this.refreshList();
         return response;
       }, (error) => {
-        UserNotification.error(`Deleting Collector failed: ${error.status === 400 ? error.responseMessage : error.message}`,
-          `Could not delete Collector "${collector.name}"`);
+        UserNotification.error(`Deleting Collector "${collector.name}" failed with status: ${error.message}`,
+          'Could not delete Collector');
       });
 
     CollectorsActions.delete.promise(promise);
@@ -178,23 +172,13 @@ const CollectorsStore = Reflux.createStore({
     CollectorsActions.copy.promise(promise);
   },
 
-  validate(collector) {
-    // set minimum api defaults for faster validation feedback
-    const payload = {
-      id: ' ',
-      service_type: 'exec',
-      executable_path: ' ',
-      default_template: ' ',
-    };
-    lodash.merge(payload, collector);
-
-    const promise = fetch('POST', URLUtils.qualifyUrl(`${this.sourceUrl}/collectors/validate`), payload);
-
+  validate(name) {
+    const promise = fetch('GET', URLUtils.qualifyUrl(`${this.sourceUrl}/collectors/validate/?name=${name}`));
     promise
       .then(
         response => response,
         error => (
-          UserNotification.error(`Validating collector "${payload.name}" failed with status: ${error.message}`,
+          UserNotification.error(`Validating collector with name "${name}" failed with status: ${error.message}`,
             'Could not validate collector')
         ));
 

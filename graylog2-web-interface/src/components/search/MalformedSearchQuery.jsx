@@ -15,23 +15,19 @@ class MalformedSearchQuery extends React.Component {
   };
 
   _getFormattedErrorDetails = (details) => {
-    return details.map((detail) => {
-      return <li><code>{detail}</code></li>;
+    return details.map(function(detail) {
+        return <li><code>{detail}</code></li>
     });
   };
 
   _getFormattedErrorDescription = (error) => {
-    let errorDetails;
-    if (error.details) {
-      errorDetails = <dd>{this._getFormattedErrorDetails(error.details)}</dd>;
-    }
     return (
       <Panel bsStyle="danger">
         <dl style={{ marginBottom: 0 }}>
           <dt>Error Message:</dt>
           <dd>{error.message}</dd>
           <dt>Details:</dt>
-          {errorDetails}
+          <dd>{this._getFormattedErrorDetails(error.details)}</dd>
         </dl>
       </Panel>
     );

@@ -1,57 +1,55 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import createReactClass from 'create-react-class';
+import Reflux from 'reflux';
 
-import connect from 'stores/connect';
 import StoreProvider from 'injection/StoreProvider';
-import PermissionsMixin from 'util/PermissionsMixin';
-
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
-const { isPermitted, isAnyPermitted } = PermissionsMixin;
+
+import PermissionsMixin from 'util/PermissionsMixin';
 
 /**
  * Wrapper component that renders its children only if the current user fulfills certain permissions.
  * Current user's permissions are fetched from the server.
  */
-const _checkPermissions = (permissions, anyPermissions, currentUser) => {
-  if (anyPermissions) {
-    return isAnyPermitted(currentUser.permissions, permissions);
-  }
+const IfPermitted = createReactClass({
+  displayName: 'IfPermitted',
 
-  return isPermitted(currentUser.permissions, permissions);
-};
+  propTypes: {
+    /** Children to render if user has permissions. */
+    children: PropTypes.node.isRequired,
+    /** Permissions the current user must fulfill. By default, the user must have all permissions that are passed in this prop. */
+    permissions: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]).isRequired,
+    /** This flag controls which permissions the user must fulfill: (all, at least one). */
+    anyPermissions: PropTypes.bool,
+  },
 
-const IfPermitted = ({ children, currentUser, permissions, anyPermissions, ...rest }) => {
-  if ((!permissions || permissions.length === 0) || (currentUser && _checkPermissions(permissions, anyPermissions, currentUser))) {
-    return React.Children.map(children, (child) => {
-      if (React.isValidElement(child)) {
-        const presentProps = (child && child.props) ? Object.keys(child.props) : [];
-        // do not overwrite existing props
-        const filteredRest = Object.entries(rest)
-          .filter(entry => !presentProps.includes(entry[0]))
-          .reduce((obj, [k, v]) => ({ ...obj, [k]: v }), {});
-        return React.cloneElement(child, filteredRest);
-      }
-      return child;
-    });
-  }
+  mixins: [Reflux.connect(CurrentUserStore), PermissionsMixin],
 
-  return null;
-};
+  getDefaultProps() {
+    return {
+      anyPermissions: false,
+    };
+  },
 
-IfPermitted.propTypes = {
-  /** Children to render if user has permissions. */
-  children: PropTypes.node.isRequired,
-  /** Permissions the current user must fulfill. By default, the user must have all permissions that are passed in this prop. */
-  permissions: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]).isRequired,
-  /** This flag controls which permissions the user must fulfill: (all, at least one). */
-  anyPermissions: PropTypes.bool,
-};
+  _checkPermissions() {
+    if (this.props.anyPermissions) {
+      return this.isAnyPermitted(this.state.currentUser.permissions, this.props.permissions);
+    }
 
-IfPermitted.defaultProps = {
-  anyPermissions: false,
-};
+    return this.isPermitted(this.state.currentUser.permissions, this.props.permissions);
+  },
 
-export default connect(IfPermitted, { currentUser: CurrentUserStore }, ({ currentUser }) => ({ currentUser: currentUser ? currentUser.currentUser : currentUser }));
+  render() {
+    if (this.state.currentUser && this._checkPermissions()) {
+      return React.Children.count(this.props.children) > 1 ? <span>{this.props.children}</span> : this.props.children;
+    }
+
+    return null;
+  },
+});
+
+export default IfPermitted;

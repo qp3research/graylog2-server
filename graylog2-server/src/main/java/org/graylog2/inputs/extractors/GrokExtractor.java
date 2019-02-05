@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class GrokExtractor extends Extractor {
-    public static final String CONFIG_GROK_PATTERN = "grok_pattern";
     private static final Logger log = LoggerFactory.getLogger(GrokExtractor.class);
 
     private final Grok grok;
@@ -67,7 +66,7 @@ public class GrokExtractor extends Extractor {
               converters,
               conditionType,
               conditionValue);
-        if (extractorConfig == null || Strings.isNullOrEmpty((String) extractorConfig.get(CONFIG_GROK_PATTERN))) {
+        if (extractorConfig == null || Strings.isNullOrEmpty((String) extractorConfig.get("grok_pattern"))) {
             throw new ConfigurationException("grok_pattern not set");
         }
 
@@ -79,7 +78,7 @@ public class GrokExtractor extends Extractor {
                 grokCompiler.register(grokPattern.name(), grokPattern.pattern());
             }
 
-            grok = grokCompiler.compile((String) extractorConfig.get(CONFIG_GROK_PATTERN), namedCapturesOnly);
+            grok = grokCompiler.compile((String) extractorConfig.get("grok_pattern"), namedCapturesOnly);
         } catch (GrokException e) {
             log.error("Unable to parse grok patterns", e);
             throw new ConfigurationException("Unable to parse grok patterns");

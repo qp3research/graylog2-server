@@ -45,7 +45,7 @@ const CollectorRow = createReactClass({
               <Button bsStyle="info" bsSize="xsmall">Edit</Button>
             </LinkContainer>
             <DropdownButton id={`more-actions-${collector.id}`} title="More actions" bsSize="xsmall" pullRight>
-              <CopyCollectorModal collector={collector}
+              <CopyCollectorModal id={collector.id}
                                   validateCollector={this.props.validateCollector}
                                   copyCollector={this.props.onClone} />
               <MenuItem divider />

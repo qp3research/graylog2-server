@@ -5,18 +5,20 @@ import UserNotification from 'util/UserNotification';
 import URLUtils from 'util/URLUtils';
 import ApiRoutes from 'routing/ApiRoutes';
 import fetch from 'logic/rest/FetchProvider';
-import ActionsProvider from 'injection/ActionsProvider';
 
+import ActionsProvider from 'injection/ActionsProvider';
 const AlertConditionsActions = ActionsProvider.getActions('AlertConditions');
 
 const AlertConditionsStore = Reflux.createStore({
   listenables: AlertConditionsActions,
-  allAlertConditions: undefined,
-  availableConditions: undefined,
+
+  init() {
+    this.available();
+  },
 
   getInitialState() {
     return {
-      availableConditions: this.availableConditions,
+      types: this.types,
       allAlertConditions: this.allAlertConditions,
     };
   },
@@ -24,8 +26,8 @@ const AlertConditionsStore = Reflux.createStore({
   available() {
     const url = URLUtils.qualifyUrl(ApiRoutes.AlertConditionsApiController.available().url);
     const promise = fetch('GET', url).then((response) => {
-      this.availableConditions = response;
-      this.trigger({ availableConditions: this.availableConditions });
+      this.types = response;
+      this.trigger(this.getInitialState());
     });
 
     AlertConditionsActions.available.promise(promise);
@@ -131,13 +133,6 @@ const AlertConditionsStore = Reflux.createStore({
       });
 
     AlertConditionsActions.get.promise(promise);
-  },
-
-  test(streamId, conditionId) {
-    const url = URLUtils.qualifyUrl(ApiRoutes.StreamAlertsApiController.test(streamId, conditionId).url);
-    const promise = fetch('POST', url);
-
-    AlertConditionsActions.test.promise(promise);
   },
 });
 

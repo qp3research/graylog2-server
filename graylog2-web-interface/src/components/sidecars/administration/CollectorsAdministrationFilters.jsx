@@ -8,7 +8,7 @@ import { naturalSortIgnoreCase } from 'util/SortUtils';
 import { SelectPopover } from 'components/common';
 import CollectorIndicator from 'components/sidecars/common/CollectorIndicator';
 import ColorLabel from 'components/sidecars/common/ColorLabel';
-import SidecarStatusEnum from 'logic/sidecar/SidecarStatusEnum';
+import StatusMapper from 'components/sidecars/common/StatusMapper';
 
 const CollectorsAdministrationFilters = createReactClass({
   propTypes: {
@@ -116,21 +116,21 @@ const CollectorsAdministrationFilters = createReactClass({
   },
 
   getStatusFilter() {
-    const status = Object.keys(SidecarStatusEnum.properties).map(key => String(key));
+    // 0: running, 1: unknown, 2: failing
+    const status = ['0', '1', '2'];
     const filter = ([statusCode], callback) => this.onFilterChange('status', statusCode, callback);
 
     const statusFilter = this.props.filters.status;
-    const statusFormatter = statusCode => lodash.upperFirst(SidecarStatusEnum.toString(statusCode));
 
     return (
       <SelectPopover id="status-filter"
-                     title="Filter by collector status"
-                     triggerNode={<Button bsSize="small" bsStyle="link">Collector Status <span className="caret" /></Button>}
+                     title="Filter by status"
+                     triggerNode={<Button bsSize="small" bsStyle="link">Status <span className="caret" /></Button>}
                      items={status}
-                     itemFormatter={statusFormatter}
+                     itemFormatter={StatusMapper.toString}
                      onItemSelect={filter}
                      selectedItems={statusFilter ? [statusFilter] : []}
-                     filterPlaceholder="Filter by collector status" />
+                     filterPlaceholder="Filter by status" />
     );
   },
 
@@ -139,8 +139,8 @@ const CollectorsAdministrationFilters = createReactClass({
       <ButtonToolbar>
         {this.getCollectorsFilter()}
         {this.getConfigurationFilter()}
-        {this.getStatusFilter()}
         {this.getOSFilter()}
+        {this.getStatusFilter()}
       </ButtonToolbar>
     );
   },

@@ -35,8 +35,6 @@ class ExpandableListItem extends React.Component {
       PropTypes.element,
       PropTypes.arrayOf(PropTypes.element),
     ]),
-    /** Leave space before and after list item */
-    padded: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -48,7 +46,6 @@ class ExpandableListItem extends React.Component {
     children: [],
     subheader: undefined,
     stayExpanded: false,
-    padded: true,
   };
 
   state = {
@@ -84,25 +81,17 @@ class ExpandableListItem extends React.Component {
   };
 
   _filterInputProps = (props) => {
-    const { expanded, indetermined, stayExpanded, padded, ...inputProps } = props;
+    const { expanded, indetermined, stayExpanded, ...inputProps } = props;
     return inputProps;
-  };
-
-  _clickOnHeader = () => {
-    if (this._checkbox) {
-      this._checkbox.click();
-    }
   };
 
   render() {
     const { expanded } = this.state;
     const { checked, expandable, selectable, header, subheader, children, ...otherProps } = this.props;
-    const headerToRender = selectable ? (<span role="button" tabIndex={0} onClick={this._clickOnHeader}>{header}</span>) : header;
     const inputProps = this._filterInputProps(otherProps);
-    const liClassName = this.props.padded ? style.listItemPadding : '';
 
     return (
-      <li className={liClassName}>
+      <li className={style.listItem}>
         <div className={style.listItemContainer}>
           {selectable && <Checkbox inputRef={(c) => { this._checkbox = c; }} inline checked={checked} {...inputProps} />}
           {expandable &&
@@ -113,7 +102,7 @@ class ExpandableListItem extends React.Component {
             </div>
           </div>
           }
-          <span className={style.header}>{headerToRender}{subheader && <span className={style.subheader}>{subheader}</span>}</span>
+          <span className={style.header}>{header}{subheader && <span className={style.subheader}>{subheader}</span>}</span>
         </div>
         <div className={style.expandableContent}>
           {expanded && children}

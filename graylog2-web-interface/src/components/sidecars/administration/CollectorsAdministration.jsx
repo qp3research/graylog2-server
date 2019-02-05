@@ -3,8 +3,6 @@ import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import lodash from 'lodash';
 import { Col, Row } from 'react-bootstrap';
-import { Link } from 'react-router';
-import Routes from 'routing/Routes';
 
 import { ControlledTableList, PaginatedList } from 'components/common';
 import { Input } from 'components/bootstrap';
@@ -13,8 +11,6 @@ import ColorLabel from 'components/sidecars/common/ColorLabel';
 import OperatingSystemIcon from 'components/sidecars/common/OperatingSystemIcon';
 import SidecarSearchForm from 'components/sidecars/common/SidecarSearchForm';
 import StatusIndicator from 'components/sidecars/common/StatusIndicator';
-
-import commonStyle from 'components/sidecars/common/CommonSidecarStyles.css';
 
 import CollectorsAdministrationActions from './CollectorsAdministrationActions';
 import CollectorsAdministrationFilters from './CollectorsAdministrationFilters';
@@ -49,7 +45,6 @@ const CollectorsAdministration = createReactClass({
     if (!lodash.isEqual(this.props.sidecarCollectorPairs, nextProps.sidecarCollectorPairs)) {
       this.setState({
         enabledCollectors: this.getEnabledCollectors(nextProps.sidecarCollectorPairs),
-        selected: this.filterSelectedCollectors(nextProps.sidecarCollectorPairs),
       });
     }
   },
@@ -68,17 +63,12 @@ const CollectorsAdministration = createReactClass({
     if (!selectAllCheckbox) {
       return;
     }
-    // Set the select all checkbox as indeterminate if some but not all items are selected.
+    // Set the select all checkbox as indeterminate if some but not items are selected.
     selectAllCheckbox.indeterminate = selected.length > 0 && !this.isAllSelected(collectors, selected);
   },
 
   sidecarCollectorId(sidecar, collector) {
     return `${sidecar.node_id}-${collector.name}`;
-  },
-
-  filterSelectedCollectors(collectors) {
-    const filteredSidecarCollectorIds = collectors.map(({ collector, sidecar }) => this.sidecarCollectorId(sidecar, collector));
-    return this.state.selected.filter(sidecarCollectorId => filteredSidecarCollectorIds.includes(sidecarCollectorId));
   },
 
   handleConfigurationChange(selectedConfigurations, doneCallback) {
@@ -190,15 +180,11 @@ const CollectorsAdministration = createReactClass({
     const sidecarCollectorId = this.sidecarCollectorId(sidecar, collector);
     const configAssignment = sidecar.assignments.find(assignment => assignment.collector_id === collector.id) || {};
     const configuration = configurations.find(config => config.id === configAssignment.configuration_id);
-    let collectorStatus = { status: null, message: null, id: null };
+    let collectorStatus;
     try {
       const result = sidecar.node_details.status.collectors.find(c => c.collector_id === collector.id);
       if (result) {
-        collectorStatus = {
-          status: result.status,
-          message: result.message,
-          id: result.collector_id,
-        };
+        collectorStatus = result.status;
       }
     } catch (e) {
       // Do nothing
@@ -215,17 +201,12 @@ const CollectorsAdministration = createReactClass({
         </Col>
         <Col lg={1} md={2} xs={3}>
           <span className={style.additionalContent}>
-            {configuration && (
-              <StatusIndicator status={collectorStatus.status}
-                               message={collectorStatus.message}
-                               id={collectorStatus.id}
-                               lastSeen={sidecar.last_seen} />
-            )}
+            {configuration && <StatusIndicator status={collectorStatus} />}
           </span>
         </Col>
         <Col lg={1} md={2} xs={3}>
           <span className={style.additionalContent}>
-            {configuration && <Link to={Routes.SYSTEM.SIDECARS.EDIT_CONFIGURATION(configuration.id)}><ColorLabel color={configuration.color} text={configuration.name} />  </Link>}
+            {configuration && <ColorLabel color={configuration.color} text={configuration.name} />}
           </span>
         </Col>
       </Row>
@@ -242,9 +223,9 @@ const CollectorsAdministration = createReactClass({
         <div className={style.collectorEntry}>
           <Row>
             <Col md={12}>
-              <h4 className={`list-group-item-heading ${style.alignedInformation} ${!sidecar.active && commonStyle.greyedOut}`}>
+              <h4 className={`list-group-item-heading ${style.alignedInformation}`}>
                 {sidecar.node_name} <OperatingSystemIcon operatingSystem={sidecar.node_details.operating_system} />
-                &emsp;<small>{sidecar.node_id} {!sidecar.active && <b>&mdash; inactive</b>}</small>
+                &emsp;<small>{sidecar.node_id}</small>
               </h4>
             </Col>
           </Row>

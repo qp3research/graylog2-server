@@ -31,28 +31,28 @@ import java.util.List;
 @AutoValue
 @JsonAutoDetect
 public abstract class RegistrationResponse {
-    @JsonProperty("configuration")
-    public abstract SidecarRegistrationConfiguration configuration();
+    @JsonProperty
+    public abstract SidecarRegistrationConfiguration collectorRegistrationConfiguration();
 
-    @JsonProperty("configuration_override")
+    @JsonProperty
     public abstract boolean configurationOverride();
 
-    @JsonProperty("actions")
+    @JsonProperty
     @Nullable
     public abstract List<CollectorAction> actions();
 
-    @JsonProperty("assignments")
+    @JsonProperty
     @Nullable
     public abstract List<ConfigurationAssignment> assignments();
 
     @JsonCreator
     public static RegistrationResponse create(
-            @JsonProperty("configuration") SidecarRegistrationConfiguration configuration,
+            @JsonProperty("configuration") SidecarRegistrationConfiguration sidecarRegistrationConfiguration,
             @JsonProperty("configuration_override") boolean configurationOverride,
             @JsonProperty("actions") @Nullable List<CollectorAction> actions,
             @JsonProperty("assignments") @Nullable List<ConfigurationAssignment> assignments) {
         return new AutoValue_RegistrationResponse(
-                configuration,
+                sidecarRegistrationConfiguration,
                 configurationOverride,
                 actions,
                 assignments);

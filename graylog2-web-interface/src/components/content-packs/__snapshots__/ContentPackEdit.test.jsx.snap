@@ -15,6 +15,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
         <li
           className="active"
           role="presentation"
+          style={undefined}
         >
           <a
             href="#"
@@ -28,6 +29,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
         <li
           className="disabled"
           role="presentation"
+          style={undefined}
         >
           <a
             href="#"
@@ -47,6 +49,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
         <li
           className="disabled"
           role="presentation"
+          style={undefined}
         >
           <a
             href="#"
@@ -139,7 +142,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
                     <span
                       className="help-block"
                     >
-                      Required. Give a descriptive name for this content pack.
+                      Give a descriptive name for this content pack.
                     </span>
                   </span>
                 </div>
@@ -168,7 +171,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
                     <span
                       className="help-block"
                     >
-                      Required. Give a short summary of the content pack.
+                      Give a short summary of the content pack.
                     </span>
                   </span>
                 </div>
@@ -189,6 +192,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
                       name="description"
                       onChange={[Function]}
                       placeholder=""
+                      required={true}
                       rows={6}
                       type="textarea"
                       value=""
@@ -225,7 +229,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
                     <span
                       className="help-block"
                     >
-                      Required. Who did this content pack and how can he be reached. e.g Name and eMail
+                      Who did this content pack and how can he be reached. e.g Name and eMail
                     </span>
                   </span>
                 </div>
@@ -247,6 +251,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
                       name="url"
                       onChange={[Function]}
                       placeholder=""
+                      required={true}
                       type="text"
                       value=""
                     />
@@ -265,7 +270,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
           className="row"
         >
           <div
-            className="col-lg-8 col-sm-offset-1"
+            className="col-sm-offset-1"
           >
             <h2>
               Content Pack selection
@@ -276,7 +281,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
           className="row"
         >
           <div
-            className="col-lg-8 col-sm-offset-1"
+            className="col-sm-offset-1"
           >
             <div
               className="search"
@@ -350,7 +355,7 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
           className="row"
         >
           <div
-            className="col-lg-8 col-sm-8 col-sm-offset-1"
+            className="col-sm-8 col-sm-offset-1"
           >
             <ul
               className="list"
@@ -455,7 +460,21 @@ exports[`<ContentPackEdit /> should render empty content pack for create 1`] = `
                     </span>
                   </dl>
                 </div>
-                
+                <h2>
+                  Description
+                </h2>
+                <br />
+                <div
+                  className="well"
+                >
+                  <div
+                    dangerouslySetInnerHTML={
+                      Object {
+                        "__html": "",
+                      }
+                    }
+                  />
+                </div>
                 <br />
                 <br />
                 <br />
@@ -495,6 +514,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
         <li
           className="active"
           role="presentation"
+          style={undefined}
         >
           <a
             href="#"
@@ -508,6 +528,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
         <li
           className=""
           role="presentation"
+          style={undefined}
         >
           <a
             href="#"
@@ -521,6 +542,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
         <li
           className="disabled"
           role="presentation"
+          style={undefined}
         >
           <a
             href="#"
@@ -613,7 +635,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
                     <span
                       className="help-block"
                     >
-                      Required. Give a descriptive name for this content pack.
+                      Give a descriptive name for this content pack.
                     </span>
                   </span>
                 </div>
@@ -642,7 +664,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
                     <span
                       className="help-block"
                     >
-                      Required. Give a short summary of the content pack.
+                      Give a short summary of the content pack.
                     </span>
                   </span>
                 </div>
@@ -663,6 +685,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
                       name="description"
                       onChange={[Function]}
                       placeholder=""
+                      required={true}
                       rows={6}
                       type="textarea"
                       value="## No one dares"
@@ -699,7 +722,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
                     <span
                       className="help-block"
                     >
-                      Required. Who did this content pack and how can he be reached. e.g Name and eMail
+                      Who did this content pack and how can he be reached. e.g Name and eMail
                     </span>
                   </span>
                 </div>
@@ -721,6 +744,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
                       name="url"
                       onChange={[Function]}
                       placeholder=""
+                      required={true}
                       type="text"
                       value="http://beinstein.com"
                     />
@@ -739,7 +763,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
           className="row"
         >
           <div
-            className="col-lg-8 col-sm-offset-1"
+            className="col-sm-offset-1"
           >
             <h2>
               Content Pack selection
@@ -750,7 +774,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
           className="row"
         >
           <div
-            className="col-lg-8 col-sm-offset-1"
+            className="col-sm-offset-1"
           >
             <div
               className="search"
@@ -824,19 +848,20 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
           className="row"
         >
           <div
-            className="col-lg-8 col-sm-8 col-sm-offset-1"
+            className="col-sm-8 col-sm-offset-1"
           >
             <ul
               className="list"
             >
               <li
-                className=""
+                className="listItem"
               >
                 <div
                   className="listItemContainer"
                 >
                   <label
                     className="checkbox-inline"
+                    style={undefined}
                     title=""
                   >
                     <input
@@ -866,13 +891,7 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
                   <span
                     className="header"
                   >
-                    <span
-                      onClick={[Function]}
-                      role="button"
-                      tabIndex={0}
-                    >
-                      Dashboard
-                    </span>
+                    Dashboard
                   </span>
                 </div>
                 <div
@@ -980,22 +999,20 @@ exports[`<ContentPackEdit /> should render with content pack for edit 1`] = `
                     </span>
                   </dl>
                 </div>
-                <div>
-                  <h2>
-                    Description
-                  </h2>
-                  <br />
+                <h2>
+                  Description
+                </h2>
+                <br />
+                <div
+                  className="well"
+                >
                   <div
-                    className="well"
-                  >
-                    <div
-                      dangerouslySetInnerHTML={
-                        Object {
-                          "__html": "<h2>No one dares</h2>",
-                        }
+                    dangerouslySetInnerHTML={
+                      Object {
+                        "__html": "<h2>No one dares</h2>",
                       }
-                    />
-                  </div>
+                    }
+                  />
                 </div>
                 <br />
                 <br />

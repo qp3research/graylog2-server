@@ -43,6 +43,7 @@ exports[`<Wizard /> should render in horizontal mode with 3 steps 1`] = `
       <li
         className="active"
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -56,6 +57,7 @@ exports[`<Wizard /> should render in horizontal mode with 3 steps 1`] = `
       <li
         className=""
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -69,6 +71,7 @@ exports[`<Wizard /> should render in horizontal mode with 3 steps 1`] = `
       <li
         className=""
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -134,6 +137,7 @@ exports[`<Wizard /> should render in horizontal mode with 3 steps and children 1
       <li
         className="active"
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -147,6 +151,7 @@ exports[`<Wizard /> should render in horizontal mode with 3 steps and children 1
       <li
         className=""
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -160,6 +165,7 @@ exports[`<Wizard /> should render in horizontal mode with 3 steps and children 1
       <li
         className=""
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -203,6 +209,7 @@ exports[`<Wizard /> should render with 3 steps 1`] = `
       <li
         className="active"
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -216,6 +223,7 @@ exports[`<Wizard /> should render with 3 steps 1`] = `
       <li
         className=""
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -229,6 +237,7 @@ exports[`<Wizard /> should render with 3 steps 1`] = `
       <li
         className=""
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -294,6 +303,7 @@ exports[`<Wizard /> should render with 3 steps and children 1`] = `
       <li
         className="active"
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -307,6 +317,7 @@ exports[`<Wizard /> should render with 3 steps and children 1`] = `
       <li
         className=""
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"
@@ -320,6 +331,7 @@ exports[`<Wizard /> should render with 3 steps and children 1`] = `
       <li
         className=""
         role="presentation"
+        style={undefined}
       >
         <a
           href="#"

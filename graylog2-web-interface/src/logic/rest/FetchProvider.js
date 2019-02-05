@@ -14,8 +14,6 @@ export class FetchError extends Error {
     this.message = message || (additional.message || 'Undefined error.');
     /* eslint-disable no-console */
     try {
-      this.responseMessage = additional.body ? additional.body.message : undefined;
-
       console.error(`There was an error fetching a resource: ${this.message}.`,
         `Additional information: ${additional.body && additional.body.message ? additional.body.message : 'Not available'}`);
     } catch (e) {
@@ -24,15 +22,12 @@ export class FetchError extends Error {
     /* eslint-enable no-console */
 
     this.additional = additional;
-    this.status = additional.status; // Shortcut, as this is often used
   }
 }
 
 export class Builder {
   constructor(method, url) {
-    this.request = request(method, url.replace(/([^:])\/\//, '$1/'))
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .set('X-Requested-By', 'XMLHttpRequest');
+    this.request = request(method, url.replace(/([^:])\/\//, '$1/')).set('X-Requested-With', 'XMLHttpRequest');
   }
 
   authenticated() {

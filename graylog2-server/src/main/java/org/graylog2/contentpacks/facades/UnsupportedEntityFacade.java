@@ -17,12 +17,11 @@
 package org.graylog2.contentpacks.facades;
 
 import com.google.common.graph.Graph;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.model.entities.Entity;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.EntityExcerpt;
+import org.graylog2.contentpacks.model.entities.EntityWithConstraints;
 import org.graylog2.contentpacks.model.entities.NativeEntity;
-import org.graylog2.contentpacks.model.entities.NativeEntityDescriptor;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.utilities.Graphs;
 import org.slf4j.Logger;
@@ -39,16 +38,16 @@ public class UnsupportedEntityFacade implements EntityFacade<Void> {
     public static final UnsupportedEntityFacade INSTANCE = new UnsupportedEntityFacade();
 
     @Override
+    public EntityWithConstraints exportNativeEntity(Void nativeEntity) {
+        throw new UnsupportedOperationException("Unsupported entity");
+    }
+
+    @Override
     public NativeEntity<Void> createNativeEntity(Entity entity,
                                                  Map<String, ValueReference> parameters,
                                                  Map<EntityDescriptor, Object> nativeEntities,
                                                  String username) {
         throw new UnsupportedOperationException("Unsupported entity " + entity.toEntityDescriptor());
-    }
-
-    @Override
-    public Optional<NativeEntity<Void>> loadNativeEntity(NativeEntityDescriptor nativeEntityDescriptor) {
-        return Optional.empty();
     }
 
     @Override
@@ -67,7 +66,7 @@ public class UnsupportedEntityFacade implements EntityFacade<Void> {
     }
 
     @Override
-    public Optional<Entity> exportEntity(EntityDescriptor entityDescriptor, EntityDescriptorIds entityDescriptorIds) {
+    public Optional<EntityWithConstraints> exportEntity(EntityDescriptor entityDescriptor) {
         LOG.warn("Couldn't collect entity {}", entityDescriptor);
         return Optional.empty();
     }

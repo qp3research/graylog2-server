@@ -3,7 +3,6 @@ import renderer from 'react-test-renderer';
 import { mount } from 'enzyme';
 import 'helpers/mocking/react-dom_mock';
 
-import ContentPack from 'logic/content-packs/ContentPack';
 import ContentPackEdit from 'components/content-packs/ContentPackEdit';
 
 jest.mock('react-overlays', () => ({
@@ -13,10 +12,19 @@ jest.mock('react-overlays', () => ({
 
 
 describe('<ContentPackEdit />', () => {
-  const emptyContentPack = ContentPack.builder()
-    .id('9950ba5a-0887-40a9-2b8f-8b50292cc7fb')
-    .build();
-
+  const emptyContentPack = {
+    v: 1,
+    id: '9950ba5a-0887-40a9-2b8f-8b50292cc7fb',
+    rev: 1,
+    requires: [],
+    parameters: [],
+    entities: [],
+    name: '',
+    summary: '',
+    description: '',
+    vendor: '',
+    url: '',
+  };
   const enrichedEntity = {
     id: '111-beef',
     v: '1.0',
@@ -38,16 +46,19 @@ describe('<ContentPackEdit />', () => {
   const selectedEntities = { dashboard: [{ id: '111-beef', type: 'dashbaord' }] };
 
   const parameter = { title: 'Port', name: 'PORT', type: 'integer', default_value: '23' };
-  const filledContentPack = ContentPack.builder()
-    .id('9950ba5a-0887-40a9-2b8f-8b50292cc7fb')
-    .name('Content Pack the movie')
-    .description('## No one dares')
-    .summary('A old content pack')
-    .vendor('Beinstein')
-    .url('http://beinstein.com')
-    .entities([enrichedEntity])
-    .parameters([parameter])
-    .build();
+  const filledContentPack = {
+    v: 1,
+    id: '9950ba5a-0887-40a9-2b8f-8b50292cc7fb',
+    rev: 1,
+    requires: [],
+    parameters: [parameter],
+    entities: [enrichedEntity],
+    name: 'Content Pack the movie',
+    summary: 'A old content pack',
+    description: '## No one dares',
+    vendor: 'Beinstein',
+    url: 'http://beinstein.com',
+  };
 
   it('should render spinner with no content pack', () => {
     const wrapper = renderer.create(<ContentPackEdit />);

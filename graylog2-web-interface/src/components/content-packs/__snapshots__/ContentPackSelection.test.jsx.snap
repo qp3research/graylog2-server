@@ -38,12 +38,12 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
                 placeholder=""
                 required={true}
                 type="text"
-                value=""
+                value={undefined}
               />
               <span
                 className="help-block"
               >
-                Required. Give a descriptive name for this content pack.
+                Give a descriptive name for this content pack.
               </span>
             </span>
           </div>
@@ -67,12 +67,12 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
                 placeholder=""
                 required={true}
                 type="text"
-                value=""
+                value={undefined}
               />
               <span
                 className="help-block"
               >
-                Required. Give a short summary of the content pack.
+                Give a short summary of the content pack.
               </span>
             </span>
           </div>
@@ -93,9 +93,10 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
                 name="description"
                 onChange={[Function]}
                 placeholder=""
+                required={true}
                 rows={6}
                 type="textarea"
-                value=""
+                value={undefined}
               />
               <span
                 className="help-block"
@@ -124,12 +125,12 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
                 placeholder=""
                 required={true}
                 type="text"
-                value=""
+                value={undefined}
               />
               <span
                 className="help-block"
               >
-                Required. Who did this content pack and how can he be reached. e.g Name and eMail
+                Who did this content pack and how can he be reached. e.g Name and eMail
               </span>
             </span>
           </div>
@@ -151,8 +152,9 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
                 name="url"
                 onChange={[Function]}
                 placeholder=""
+                required={true}
                 type="text"
-                value=""
+                value={undefined}
               />
               <span
                 className="help-block"
@@ -169,7 +171,7 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
     className="row"
   >
     <div
-      className="col-lg-8 col-sm-offset-1"
+      className="col-sm-offset-1"
     >
       <h2>
         Content Pack selection
@@ -180,7 +182,7 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
     className="row"
   >
     <div
-      className="col-lg-8 col-sm-offset-1"
+      className="col-sm-offset-1"
     >
       <div
         className="search"
@@ -254,7 +256,7 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
     className="row"
   >
     <div
-      className="col-lg-8 col-sm-8 col-sm-offset-1"
+      className="col-sm-8 col-sm-offset-1"
     >
       <ul
         className="list"
@@ -307,7 +309,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
               <span
                 className="help-block"
               >
-                Required. Give a descriptive name for this content pack.
+                Give a descriptive name for this content pack.
               </span>
             </span>
           </div>
@@ -331,12 +333,12 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
                 placeholder=""
                 required={true}
                 type="text"
-                value="summary"
+                value="summmary"
               />
               <span
                 className="help-block"
               >
-                Required. Give a short summary of the content pack.
+                Give a short summary of the content pack.
               </span>
             </span>
           </div>
@@ -357,9 +359,10 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
                 name="description"
                 onChange={[Function]}
                 placeholder=""
+                required={true}
                 rows={6}
                 type="textarea"
-                value="description"
+                value="descr"
               />
               <span
                 className="help-block"
@@ -393,7 +396,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
               <span
                 className="help-block"
               >
-                Required. Who did this content pack and how can he be reached. e.g Name and eMail
+                Who did this content pack and how can he be reached. e.g Name and eMail
               </span>
             </span>
           </div>
@@ -415,6 +418,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
                 name="url"
                 onChange={[Function]}
                 placeholder=""
+                required={true}
                 type="text"
                 value="http://example.com"
               />
@@ -433,31 +437,18 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
     className="row"
   >
     <div
-      className="col-lg-8 col-sm-offset-1"
+      className="col-sm-offset-1"
     >
       <h2>
         Content Pack selection
       </h2>
-      <span
-        className="help-block"
-      >
-        You can select between installed entities from the server (
-        <i
-          className="fa fa-server"
-        />
-        ) or entities from the former content pack revision (
-        <i
-          className="fa fa-archive contentPackEntity"
-        />
-        ).
-      </span>
     </div>
   </div>
   <div
     className="row"
   >
     <div
-      className="col-lg-8 col-sm-offset-1"
+      className="col-sm-offset-1"
     >
       <div
         className="search"
@@ -531,19 +522,20 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
     className="row"
   >
     <div
-      className="col-lg-8 col-sm-8 col-sm-offset-1"
+      className="col-sm-8 col-sm-offset-1"
     >
       <ul
         className="list"
       >
         <li
-          className=""
+          className="listItem"
         >
           <div
             className="listItemContainer"
           >
             <label
               className="checkbox-inline"
+              style={undefined}
               title=""
             >
               <input
@@ -573,13 +565,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
             <span
               className="header"
             >
-              <span
-                onClick={[Function]}
-                role="button"
-                tabIndex={0}
-              >
-                Spaceship
-              </span>
+              Spaceship
             </span>
           </div>
           <div

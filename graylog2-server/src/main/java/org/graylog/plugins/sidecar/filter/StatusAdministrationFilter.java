@@ -17,17 +17,18 @@
 package org.graylog.plugins.sidecar.filter;
 
 import com.google.inject.assistedinject.Assisted;
+import org.graylog.plugins.sidecar.mapper.SidecarStatusMapper.Status;
 import org.graylog.plugins.sidecar.rest.models.CollectorStatusList;
 import org.graylog.plugins.sidecar.rest.models.Sidecar;
 
 import javax.inject.Inject;
 
 public class StatusAdministrationFilter implements AdministrationFilter {
-    private final Sidecar.Status status;
+    private final Status status;
 
     @Inject
     public StatusAdministrationFilter(@Assisted int status) {
-        this.status = Sidecar.Status.fromStatusCode(status);
+        this.status = Status.fromStatusCode(status);
     }
 
     @Override
@@ -35,9 +36,9 @@ public class StatusAdministrationFilter implements AdministrationFilter {
         final CollectorStatusList collectorStatusList = sidecar.nodeDetails().statusList();
         if (collectorStatusList == null) {
             // Sidecars with not known status are in an UNKNOWN status
-            return Sidecar.Status.UNKNOWN.equals(status);
+            return Status.UNKNOWN.equals(status);
         }
         return collectorStatusList.collectors().stream()
-                .anyMatch(status -> Sidecar.Status.fromStatusCode(status.status()).equals(this.status));
+                .anyMatch(status -> Status.fromStatusCode(status.status()).equals(this.status));
     }
 }

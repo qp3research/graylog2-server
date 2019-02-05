@@ -11,6 +11,16 @@ import CollectorForm from 'components/sidecars/configuration-forms/CollectorForm
 const SidecarNewCollectorPage = createReactClass({
   displayName: 'SidecarNewCollectorPage',
 
+  componentDidMount() {
+    this.style.use();
+  },
+
+  componentWillUnmount() {
+    this.style.unuse();
+  },
+
+  style: require('!style/useable!css!components/sidecars/styles/SidecarStyles.css'),
+
   render() {
     return (
       <DocumentTitle title="New Log Collector">

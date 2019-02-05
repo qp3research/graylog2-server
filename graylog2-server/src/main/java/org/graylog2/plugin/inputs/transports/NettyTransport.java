@@ -25,6 +25,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import org.graylog2.inputs.transports.netty.EventLoopGroupFactory;
 import org.graylog2.inputs.transports.netty.ExceptionLoggingChannelHandler;
+import org.graylog2.inputs.transports.netty.MessageAggregationHandler;
 import org.graylog2.inputs.transports.netty.PromiseFailureHandler;
 import org.graylog2.inputs.transports.netty.RawMessageHandler;
 import org.graylog2.plugin.LocalMetricRegistry;
@@ -96,17 +97,8 @@ public abstract class NettyTransport implements Transport {
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 final ChannelPipeline p = ch.pipeline();
-                Map.Entry<String, Callable<? extends ChannelHandler>> postentry = null;
                 for (final Map.Entry<String, Callable<? extends ChannelHandler>> entry : handlerList.entrySet()) {
-                    // Handle exceptions at the top of the (bottom-up evaluated) pipeline
-                    if (entry.getKey().equals("exception-logger")) {
-                        postentry = entry;
-                    } else {
-                        p.addLast(entry.getKey(), entry.getValue().call());
-                    }
-                }
-                if (postentry != null) {
-                    p.addLast(postentry.getKey(), postentry.getValue().call());
+                    p.addLast(entry.getKey(), entry.getValue().call());
                 }
             }
         };
@@ -175,7 +167,17 @@ public abstract class NettyTransport implements Transport {
      * @return list of custom {@link ChannelHandler channel handlers} to add to the Netty {@link ChannelPipeline channel pipeline} for child channels
      * @see #getCustomChildChannelHandlers(MessageInput)
      */
-    protected abstract LinkedHashMap<String, Callable<? extends ChannelHandler>> getChildChannelHandlers(final MessageInput input);
+    protected LinkedHashMap<String, Callable<? extends ChannelHandler>> getChildChannelHandlers(final MessageInput input) {
+        final LinkedHashMap<String, Callable<? extends ChannelHandler>> handlerList = new LinkedHashMap<>(getCustomChildChannelHandlers(input));
+
+        if (aggregator != null) {
+            log.debug("Adding codec aggregator {} to channel pipeline", aggregator);
+            handlerList.put("codec-aggregator", () -> new MessageAggregationHandler(aggregator, localRegistry));
+        }
+        handlerList.put("rawmessage-handler", () -> new RawMessageHandler(input));
+
+        return handlerList;
+    }
 
     protected int getRecvBufferSize() {
         return recvBufferSize;

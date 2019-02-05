@@ -18,16 +18,9 @@ package org.graylog2.contentpacks.facades;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.graph.Graph;
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.ImmutableGraph;
-import com.google.common.graph.MutableGraph;
 import com.google.common.primitives.Ints;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.exceptions.ContentPackException;
 import org.graylog2.contentpacks.model.ModelId;
 import org.graylog2.contentpacks.model.ModelType;
@@ -39,23 +32,17 @@ import org.graylog2.contentpacks.model.entities.Entity;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.EntityExcerpt;
 import org.graylog2.contentpacks.model.entities.EntityV1;
+import org.graylog2.contentpacks.model.entities.EntityWithConstraints;
 import org.graylog2.contentpacks.model.entities.ExtractorEntity;
-import org.graylog2.contentpacks.model.entities.GrokPatternEntity;
 import org.graylog2.contentpacks.model.entities.InputEntity;
-import org.graylog2.contentpacks.model.entities.LookupTableEntity;
 import org.graylog2.contentpacks.model.entities.NativeEntity;
-import org.graylog2.contentpacks.model.entities.NativeEntityDescriptor;
 import org.graylog2.contentpacks.model.entities.references.ReferenceMap;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.database.NotFoundException;
-import org.graylog2.grok.GrokPatternService;
 import org.graylog2.inputs.Input;
 import org.graylog2.inputs.InputService;
 import org.graylog2.inputs.converters.ConverterFactory;
 import org.graylog2.inputs.extractors.ExtractorFactory;
-import org.graylog2.inputs.extractors.GrokExtractor;
-import org.graylog2.inputs.extractors.LookupTableExtractor;
-import org.graylog2.lookup.db.DBLookupTableService;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.PluginMetaData;
 import org.graylog2.plugin.ServerStatus;
@@ -74,14 +61,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.graylog2.contentpacks.model.entities.references.ReferenceMapUtils.toReferenceMap;
@@ -90,12 +75,10 @@ import static org.graylog2.contentpacks.model.entities.references.ReferenceMapUt
 public class InputFacade implements EntityFacade<InputWithExtractors> {
     private static final Logger LOG = LoggerFactory.getLogger(InputFacade.class);
 
-    public static final ModelType TYPE_V1 = ModelTypes.INPUT_V1;
+    public static final ModelType TYPE = ModelTypes.INPUT;
 
     private final ObjectMapper objectMapper;
     private final InputService inputService;
-    private final DBLookupTableService lookupTableService;
-    private final GrokPatternService grokPatternService;
     private final InputRegistry inputRegistry;
     private final MessageInputFactory messageInputFactory;
     private final ExtractorFactory extractorFactory;
@@ -108,8 +91,6 @@ public class InputFacade implements EntityFacade<InputWithExtractors> {
     public InputFacade(ObjectMapper objectMapper,
                        InputService inputService,
                        InputRegistry inputRegistry,
-                       DBLookupTableService lookupTableService,
-                       GrokPatternService grokPatternService,
                        MessageInputFactory messageInputFactory,
                        ExtractorFactory extractorFactory,
                        ConverterFactory converterFactory,
@@ -118,8 +99,6 @@ public class InputFacade implements EntityFacade<InputWithExtractors> {
                        Map<String, MessageInput.Factory<? extends MessageInput>> inputFactories) {
         this.objectMapper = objectMapper;
         this.inputService = inputService;
-        this.lookupTableService = lookupTableService;
-        this.grokPatternService = grokPatternService;
         this.inputRegistry = inputRegistry;
         this.messageInputFactory = messageInputFactory;
         this.extractorFactory = extractorFactory;
@@ -129,8 +108,8 @@ public class InputFacade implements EntityFacade<InputWithExtractors> {
         this.inputFactories = inputFactories;
     }
 
-    @VisibleForTesting
-    Entity exportNativeEntity(InputWithExtractors inputWithExtractors, EntityDescriptorIds entityDescriptorIds) {
+    @Override
+    public EntityWithConstraints exportNativeEntity(InputWithExtractors inputWithExtractors) {
         final Input input = inputWithExtractors.input();
 
         // TODO: Create independent representation of entity?
@@ -148,13 +127,14 @@ public class InputFacade implements EntityFacade<InputWithExtractors> {
                 ValueReference.of(input.isGlobal()),
                 extractors);
         final JsonNode data = objectMapper.convertValue(inputEntity, JsonNode.class);
-        final Set<Constraint> constraints = versionConstraints(input);
-        return EntityV1.builder()
-                .id(ModelId.of(entityDescriptorIds.getOrThrow(input.getId(), ModelTypes.INPUT_V1)))
-                .type(ModelTypes.INPUT_V1)
+        final EntityV1 entity = EntityV1.builder()
+                .id(ModelId.of(input.getId()))
+                .type(ModelTypes.INPUT)
                 .data(data)
-                .constraints(ImmutableSet.copyOf(constraints))
                 .build();
+        final Set<Constraint> constraints = versionConstraints(input);
+
+        return EntityWithConstraints.create(entity, constraints);
     }
 
     private Set<Constraint> versionConstraints(Input input) {
@@ -242,7 +222,7 @@ public class InputFacade implements EntityFacade<InputWithExtractors> {
             throw new RuntimeException("Couldn't create extractors", e);
         }
 
-        return NativeEntity.create(entity.id(), input.getId(), TYPE_V1, input.getTitle(), InputWithExtractors.create(input, extractors));
+        return NativeEntity.create(input.getId(), TYPE, InputWithExtractors.create(input, extractors));
     }
 
     private MessageInput createMessageInput(
@@ -426,16 +406,6 @@ public class InputFacade implements EntityFacade<InputWithExtractors> {
     }
 
     @Override
-    public Optional<NativeEntity<InputWithExtractors>> loadNativeEntity(NativeEntityDescriptor nativeEntityDescriptor) {
-        try {
-            final InputWithExtractors input = InputWithExtractors.create(inputService.find(nativeEntityDescriptor.id().id()));
-            return Optional.of(NativeEntity.create(nativeEntityDescriptor, input));
-        } catch (NotFoundException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public void delete(InputWithExtractors nativeEntity) {
         inputService.destroy(nativeEntity.input());
     }
@@ -444,7 +414,7 @@ public class InputFacade implements EntityFacade<InputWithExtractors> {
     public EntityExcerpt createExcerpt(InputWithExtractors inputWithExtractors) {
         return EntityExcerpt.builder()
                 .id(ModelId.of(inputWithExtractors.input().getId()))
-                .type(ModelTypes.INPUT_V1)
+                .type(ModelTypes.INPUT)
                 .title(inputWithExtractors.input().getTitle())
                 .build();
     }
@@ -458,149 +428,15 @@ public class InputFacade implements EntityFacade<InputWithExtractors> {
     }
 
     @Override
-    public Optional<Entity> exportEntity(EntityDescriptor entityDescriptor, EntityDescriptorIds entityDescriptorIds) {
+    public Optional<EntityWithConstraints> exportEntity(EntityDescriptor entityDescriptor) {
         final ModelId modelId = entityDescriptor.id();
 
         try {
             final Input input = inputService.find(modelId.id());
             final InputWithExtractors inputWithExtractors = InputWithExtractors.create(input, inputService.getExtractors(input));
-            return Optional.of(exportNativeEntity(inputWithExtractors, entityDescriptorIds));
+            return Optional.of(exportNativeEntity(inputWithExtractors));
         } catch (NotFoundException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public Graph<EntityDescriptor> resolveNativeEntity(EntityDescriptor entityDescriptor) {
-        final MutableGraph<EntityDescriptor> mutableGraph = GraphBuilder.directed().build();
-        mutableGraph.addNode(entityDescriptor);
-
-        final ModelId modelId = entityDescriptor.id();
-        try {
-            final Input input = inputService.find(modelId.toString());
-            final InputWithExtractors inputWithExtractors = InputWithExtractors.create(input, inputService.getExtractors(input));
-
-            resolveNativeEntityLookupTable(entityDescriptor, inputWithExtractors, mutableGraph);
-            resolveNativeEntityGrokPattern(entityDescriptor, inputWithExtractors, mutableGraph);
-
-            return ImmutableGraph.copyOf(mutableGraph);
-        } catch (NotFoundException e) {
-            LOG.debug("Couldn't find input {}", entityDescriptor, e);
-        }
-        return ImmutableGraph.copyOf(mutableGraph);
-    }
-
-    private void resolveNativeEntityGrokPattern(EntityDescriptor entityDescriptor,
-                                                InputWithExtractors inputWithExtractors,
-                                                MutableGraph<EntityDescriptor> mutableGraph) {
-        inputWithExtractors.extractors().stream()
-                .filter(e -> e.getType().equals(Extractor.Type.GROK))
-                .map(e -> (String) e.getExtractorConfig().get(GrokExtractor.CONFIG_GROK_PATTERN))
-                .map(GrokPatternService::extractPatternNames)
-                .flatMap(Collection::stream)
-                .forEach(patternName -> {
-                    grokPatternService.loadByName(patternName).ifPresent(depPattern -> {
-                        final EntityDescriptor depEntityDescriptor = EntityDescriptor.create(
-                                depPattern.id(), ModelTypes.GROK_PATTERN_V1);
-                        mutableGraph.putEdge(entityDescriptor, depEntityDescriptor);
-                    });
-                });
-    }
-
-    private void resolveNativeEntityLookupTable(EntityDescriptor entityDescriptor,
-                                                InputWithExtractors inputWithExtractors,
-                                                MutableGraph<EntityDescriptor> mutableGraph) {
-
-        final Stream<String> extractorLookupNames = inputWithExtractors.extractors().stream()
-                .filter(e -> e.getType().equals(Extractor.Type.LOOKUP_TABLE))
-                .map(e -> (String) e.getExtractorConfig().get(LookupTableExtractor.CONFIG_LUT_NAME));
-        final Stream<String> converterLookupNames = inputWithExtractors.extractors().stream()
-                .flatMap(e -> e.getConverters().stream())
-                .filter(c -> c.getType().equals(Converter.Type.LOOKUP_TABLE))
-                .map(c -> (String) c.getConfig().get("lookup_table_name"));
-
-        Stream.concat(extractorLookupNames, converterLookupNames)
-                .map(lookupTableService::get)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(lookupTableDto -> {
-                    EntityDescriptor lookupTable = EntityDescriptor.create(
-                            ModelId.of(lookupTableDto.id()), ModelTypes.LOOKUP_TABLE_V1);
-                    mutableGraph.putEdge(entityDescriptor, lookupTable);
-                });
-    }
-
-    @Override
-    public Graph<Entity> resolveForInstallation(Entity entity,
-                                                Map<String, ValueReference> parameters,
-                                                Map<EntityDescriptor, Entity> entities) {
-        if(entity instanceof EntityV1) {
-            return resolveForInstallationV1((EntityV1) entity, parameters, entities);
-        } else {
-            throw new IllegalArgumentException("Unsupported entity version: " + entity.getClass());
-        }
-    }
-
-    private Graph<Entity> resolveForInstallationV1(EntityV1 entity,
-                                                   Map<String, ValueReference> parameters,
-                                                   Map<EntityDescriptor, Entity> entities) {
-        final MutableGraph<Entity> graph = GraphBuilder.directed().build();
-        graph.addNode(entity);
-
-        final InputEntity input = objectMapper.convertValue(entity.data(), InputEntity.class);
-
-        resolveForInstallationV1LookupTable(entity, input, parameters, entities, graph);
-        resolveForInstallationV1GrokPattern(entity, input, parameters, entities, graph);
-
-        return ImmutableGraph.copyOf(graph);
-    }
-
-    private void resolveForInstallationV1GrokPattern(EntityV1 entity,
-                                                InputEntity input,
-                                                Map<String, ValueReference> parameters,
-                                                Map<EntityDescriptor, Entity> entities,
-                                                MutableGraph<Entity> graph) {
-        input.extractors().stream()
-                .filter(e -> e.type().asString(parameters).equals(Extractor.Type.GROK.toString()))
-                .map(ExtractorEntity::configuration)
-                .map(c -> ((ValueReference) c.get(GrokExtractor.CONFIG_GROK_PATTERN)).asString(parameters))
-                .map(GrokPatternService::extractPatternNames)
-                .flatMap(Collection::stream)
-                .forEach(patternName -> {
-                    entities.entrySet().stream()
-                            .filter(x -> x.getValue().type().equals(ModelTypes.GROK_PATTERN_V1))
-                            .filter(x -> {
-                                EntityV1 entityV1 = (EntityV1) x.getValue();
-                                GrokPatternEntity grokPatternEntity1 = objectMapper.convertValue(entityV1.data(),
-                                        GrokPatternEntity.class);
-                                return grokPatternEntity1.name().equals(patternName);
-                            }).forEach(x -> graph.putEdge(entity, x.getValue()));
-                });
-    }
-
-    private void resolveForInstallationV1LookupTable(EntityV1 entity,
-                                                     InputEntity input,
-                                                     Map<String, ValueReference> parameters,
-                                                     Map<EntityDescriptor, Entity> entities,
-                                                     MutableGraph<Entity> graph) {
-        final Set<String> lookupTableNames = input.extractors().stream()
-                .filter(e -> e.type().asString(parameters).equals(Extractor.Type.LOOKUP_TABLE.toString()))
-                .map(ExtractorEntity::configuration)
-                .map(c -> ((ValueReference) c.get(LookupTableExtractor.CONFIG_LUT_NAME)).asString(parameters))
-                .collect(Collectors.toSet());
-
-        input.extractors().stream().flatMap(c -> c.converters().stream())
-                .filter(con -> con.type().asString(parameters).equals(Converter.Type.LOOKUP_TABLE.name()))
-                .map(con -> ((ValueReference) con.configuration().get("lookup_table_name")).asString(parameters))
-                .forEach(lookupTableNames::add);
-
-        entities.entrySet().stream()
-                .filter(x -> x.getValue().type().equals(ModelTypes.LOOKUP_TABLE_V1))
-                .filter(x -> {
-                    EntityV1 entityV1 = (EntityV1) x.getValue();
-                    LookupTableEntity lookupTableEntity = objectMapper.convertValue(entityV1.data(), LookupTableEntity.class);
-                    return  lookupTableNames.contains(lookupTableEntity.name().asString(parameters));
-                })
-                .forEach(x -> graph.putEdge(entity, x.getValue()));
     }
 }

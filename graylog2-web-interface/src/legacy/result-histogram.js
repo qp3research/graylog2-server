@@ -106,11 +106,13 @@ const resultHistogram = {
   },
 
   updateData(newData) {
-    if (typeof this._resultHistogramGraph !== 'undefined') {
-      this._histogram = newData;
-      this._resultHistogramGraph.series[0].data = newData;
-      this._resetAlertAnnotator();
-      this._resultHistogramGraph.update();
+    if (this._histogram.length > 0) {
+      if (typeof this._resultHistogramGraph !== 'undefined') {
+        this._histogram = newData;
+        this._resultHistogramGraph.series[0].data = newData;
+        this._resetAlertAnnotator();
+        this._resultHistogramGraph.update();
+      }
     }
   },
 

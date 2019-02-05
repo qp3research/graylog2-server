@@ -2,23 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import {
-  InputGroup, FormGroup, ControlLabel, FormControl, HelpBlock, DropdownButton, MenuItem,
+  InputGroup, FormGroup, ControlLabel, FormControl, HelpBlock, DropdownButton, MenuItem
 } from 'react-bootstrap';
-import lodash from 'lodash';
-
 import { InputWrapper } from 'components/bootstrap';
-import FormsUtils from 'util/FormsUtils';
-
-const unitValues = [
-  'NANOSECONDS',
-  'MICROSECONDS',
-  'MILLISECONDS',
-  'SECONDS',
-  'MINUTES',
-  'HOURS',
-  'DAYS',
-];
-const unitType = PropTypes.oneOf(unitValues);
 
 /**
  * Component that renders a form field for a time unit value. The field has
@@ -47,12 +33,8 @@ const TimeUnitInput = createReactClass({
     enabled: PropTypes.bool,
     /** Specifies the value of the input. */
     value: PropTypes.number,
-    /** Indicates the default value to use, in case value is not provided or set. */
-    defaultValue: PropTypes.number,
     /** Indicates which unit is used for the value. */
-    unit: unitType,
-    /** Specifies which units should be available in the form. */
-    units: PropTypes.arrayOf(unitType),
+    unit: PropTypes.oneOf(['NANOSECONDS', 'MICROSECONDS', 'MILLISECONDS', 'SECONDS', 'MINUTES', 'HOURS', 'DAYS']),
     /** Add an additional class to the label. */
     labelClassName: PropTypes.string,
     /** Add an additional class to the input wrapper. */
@@ -61,10 +43,8 @@ const TimeUnitInput = createReactClass({
 
   getDefaultProps() {
     return {
-      defaultValue: 1,
-      value: undefined,
+      value: 1,
       unit: 'SECONDS',
-      units: unitValues,
       label: '',
       help: '',
       required: false,
@@ -76,60 +56,46 @@ const TimeUnitInput = createReactClass({
 
   getInitialState() {
     return {
-      unitOptions: this._getUnitOptions(this.props.units),
-    };
-  },
-
-  componentWillReceiveProps(nextProps) {
-    if (!lodash.isEqual(this.props.units, nextProps.units)) {
-      this.setState({ unitOptions: this._getUnitOptions(nextProps.units) });
-    }
-  },
-
-  _getEffectiveValue() {
-    return lodash.defaultTo(this.props.value, this.props.defaultValue);
-  },
-
-  _getUnitOptions(units) {
-    return unitValues
-      .filter(value => units.includes(value))
-      .map(value => ({ value: value, label: value.toLowerCase() }));
-  },
-
-  _isChecked() {
-    return this.props.required || this.props.enabled;
-  },
-
-  _propagateInput(update) {
-    const previousInput = {
-      value: this._getEffectiveValue(),
+      checked: this.props.required || this.props.enabled,
+      value: this.props.value,
       unit: this.props.unit,
-      checked: this._isChecked(),
     };
-    const nextInput = Object.assign({}, previousInput, update);
-    this.props.update(nextInput.value, nextInput.unit, nextInput.checked);
+  },
+
+  OPTIONS: [
+    { value: 'NANOSECONDS', label: 'nanoseconds' },
+    { value: 'MICROSECONDS', label: 'microseconds' },
+    { value: 'MILLISECONDS', label: 'milliseconds' },
+    { value: 'SECONDS', label: 'seconds' },
+    { value: 'MINUTES', label: 'minutes' },
+    { value: 'HOURS', label: 'hours' },
+    { value: 'DAYS', label: 'days' },
+  ],
+
+  _propagateState() {
+    this.props.update(this.state.value, this.state.unit, this.state.checked);
   },
 
   _onToggleEnable(e) {
-    this._propagateInput({ checked: e.target.checked });
+    this.setState({ checked: e.target.checked }, this._propagateState);
   },
 
   _onUpdate(e) {
-    const value = lodash.defaultTo(FormsUtils.getValueFromInput(e.target), this.props.defaultValue);
-    this._propagateInput({ value: value });
+    const value = e.target.value;
+    this.setState({ value: value }, this._propagateState);
   },
 
   _onUnitSelect(unit) {
-    this._propagateInput({ unit: unit });
+    this.setState({ unit: unit }, this._propagateState);
   },
 
   render() {
-    const options = this.state.unitOptions.map((o) => {
+    const options = this.OPTIONS.map((o) => {
       return <MenuItem key={o.value} onSelect={() => this._onUnitSelect(o.value)}>{o.label}</MenuItem>;
     });
 
     const checkbox = (<InputGroup.Addon>
-      <input type="checkbox" checked={this._isChecked()} onChange={this._onToggleEnable} />
+      <input type="checkbox" checked={this.state.checked} onChange={this._onToggleEnable} />
     </InputGroup.Addon>);
 
     return (
@@ -138,10 +104,10 @@ const TimeUnitInput = createReactClass({
         <InputWrapper className={this.props.wrapperClassName}>
           <InputGroup>
             {!this.props.required && checkbox}
-            <FormControl type="number" disabled={!this._isChecked()} onChange={this._onUpdate} value={this._getEffectiveValue()} />
+            <FormControl type="text" disabled={!this.state.checked} onChange={this._onUpdate} value={this.state.value} />
             <DropdownButton componentClass={InputGroup.Button}
                             id="input-dropdown-addon"
-                            title={this.state.unitOptions.filter(o => o.value === this.props.unit)[0].label}>
+                            title={this.OPTIONS.filter(o => o.value === this.state.unit)[0].label}>
               {options}
             </DropdownButton>
           </InputGroup>

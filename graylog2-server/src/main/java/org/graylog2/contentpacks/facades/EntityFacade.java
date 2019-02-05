@@ -20,12 +20,11 @@ import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.ImmutableGraph;
 import com.google.common.graph.MutableGraph;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.model.entities.Entity;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.EntityExcerpt;
+import org.graylog2.contentpacks.model.entities.EntityWithConstraints;
 import org.graylog2.contentpacks.model.entities.NativeEntity;
-import org.graylog2.contentpacks.model.entities.NativeEntityDescriptor;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 
 import java.util.Map;
@@ -34,15 +33,23 @@ import java.util.Set;
 
 public interface EntityFacade<T> {
     /**
+     * Create an exportable model of a native entity of type {@code T} including optional constraints.
+     *
+     * @param nativeEntity the native entity to export
+     * @return an exportable (serializable) model of the entity including optional constraints.
+     * @see EntityWithConstraints
+     */
+    EntityWithConstraints exportNativeEntity(T nativeEntity);
+
+    /**
      * Create an exportable model of a native entity referenced by an {@link EntityDescriptor}
      * including optional constraints.
      *
      * @param entityDescriptor the descriptor of the native entity to export
-     * @param entityDescriptorIds the IDs for all entity descriptors
      * @return an exportable (serializable) model of the entity including optional constraints,
      * or {@link Optional#empty()} if the entity couldn't be found.
      */
-    Optional<Entity> exportEntity(EntityDescriptor entityDescriptor, EntityDescriptorIds entityDescriptorIds);
+    Optional<EntityWithConstraints> exportEntity(EntityDescriptor entityDescriptor);
 
     /**
      * Create a native entity of type {@code T} from an entity model.
@@ -73,15 +80,6 @@ public interface EntityFacade<T> {
     default Optional<NativeEntity<T>> findExisting(Entity entity, Map<String, ValueReference> parameters) {
         return Optional.empty();
     }
-
-    /**
-     * Loads the native entity instance for the given native entity descriptor.
-     *
-     * @param nativeEntityDescriptor the native entity descriptor
-     * @return the existing native entity in the database wrapped in {@link NativeEntity<T>},
-     * or {@link Optional#empty()} if the native entity doesn't exist.
-     */
-    Optional<NativeEntity<T>> loadNativeEntity(NativeEntityDescriptor nativeEntityDescriptor);
 
     /**
      * Delete the given native entity.

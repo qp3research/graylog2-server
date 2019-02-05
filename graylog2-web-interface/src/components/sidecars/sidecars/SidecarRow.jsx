@@ -8,9 +8,7 @@ import Routes from 'routing/Routes';
 import { Timestamp } from 'components/common';
 import OperatingSystemIcon from 'components/sidecars/common/OperatingSystemIcon';
 import StatusIndicator from 'components/sidecars/common/StatusIndicator';
-import SidecarStatusEnum from 'logic/sidecar/SidecarStatusEnum';
 
-import commonStyle from 'components/sidecars/common/CommonSidecarStyles.css';
 import style from './SidecarRow.css';
 
 class SidecarRow extends React.Component {
@@ -24,16 +22,11 @@ class SidecarRow extends React.Component {
 
   render() {
     const sidecar = this.props.sidecar;
-    const sidecarClass = sidecar.active ? '' : commonStyle.greyedOut;
+    const sidecarClass = sidecar.active ? '' : style.greyedOut;
     const annotation = sidecar.active ? '' : ' (inactive)';
-    let sidecarStatus = { status: null, message: null, id: null };
-
-    if (sidecar.node_details.status && SidecarStatusEnum.isValidStatusCode(sidecar.node_details.status.status)) {
-      sidecarStatus = {
-        status: sidecar.node_details.status.status,
-        message: sidecar.node_details.status.message,
-        id: sidecar.node_id,
-      };
+    let sidecarStatus = null;
+    if (sidecar.node_details.status) {
+      sidecarStatus = sidecar.node_details.status.status;
     }
     return (
       <tr className={sidecarClass}>
@@ -46,10 +39,7 @@ class SidecarRow extends React.Component {
           }
         </td>
         <td>
-          <StatusIndicator status={sidecarStatus.status}
-                           message={sidecarStatus.message}
-                           id={sidecarStatus.id}
-                           lastSeen={sidecar.last_seen} />
+          <StatusIndicator status={sidecarStatus} />
         </td>
         <td>
           <OperatingSystemIcon operatingSystem={sidecar.node_details.operating_system} />&ensp;

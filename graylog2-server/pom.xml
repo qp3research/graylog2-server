@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.graylog</groupId>
         <artifactId>graylog-project-parent</artifactId>
-        <version>3.0.0-rc.2-SNAPSHOT</version>
+        <version>3.0.0-alpha.2-SNAPSHOT</version>
         <relativePath>../graylog-project-parent</relativePath>
     </parent>
 
@@ -65,7 +65,7 @@
 
         <it.es.httpPort>19200</it.es.httpPort>
         <it.es.transportPort>19300</it.es.transportPort>
-        <it.es.version>5.6.12</it.es.version>
+        <it.es.version>5.6.9</it.es.version>
         <it.es.instanceCount>1</it.es.instanceCount>
         <it.es.clusterName>test</it.es.clusterName>
         <it.es.await>false</it.es.await>
@@ -317,13 +317,8 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hibernate.validator</groupId>
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${bouncycastle.version}</version>
         </dependency>
 
         <!-- Logging dependencies -->
@@ -425,15 +420,7 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-codec-dns</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-resolver-dns</artifactId>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -552,6 +539,10 @@
         <dependency>
             <groupId>net.jcip</groupId>
             <artifactId>jcip-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.auto.value</groupId>
@@ -673,16 +664,6 @@
                             <artifact>commons-collections:commons-collections</artifact>
                             <excludes>
                                 <exclude>org/apache/commons/collections/functors/InvokerTransformer.class</exclude>
-                            </excludes>
-                        </filter>
-                        <!-- Bouncycastle's JARs are signed. When building a shaded JAR, either remove the signatures, or
-                             add dependency to the main JAR's manifest. Otherwise running the application will fail. -->
-                        <filter>
-                            <artifact>org.bouncycastle:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
                             </excludes>
                         </filter>
                     </filters>
@@ -905,7 +886,7 @@
                 </property>
             </activation>
             <properties>
-                <it.es.version>5.6.12</it.es.version>
+                <it.es.version>5.6.9</it.es.version>
             </properties>
             <build>
                 <plugins>

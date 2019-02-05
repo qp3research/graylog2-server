@@ -20,7 +20,6 @@ import org.graylog.plugins.sidecar.services.SidecarService;
 import org.graylog.plugins.sidecar.system.SidecarConfiguration;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.periodical.Periodical;
-import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +70,7 @@ public class PurgeExpiredSidecarsThread extends Periodical {
 
     @Override
     public int getPeriodSeconds() {
-        return 60 * 10;
+        return 60 * 60;
     }
 
     @Override
@@ -81,9 +80,6 @@ public class PurgeExpiredSidecarsThread extends Periodical {
 
     @Override
     public void doRun() {
-        final Period inactiveThreshold = this.sidecarConfiguration.sidecarInactiveThreshold();
-        final int expiredSidecars = sidecarService.markExpired(inactiveThreshold, "Received no ping signal from sidecar");
-        LOG.debug("Marked {} sidecars as inactive.", expiredSidecars);
         final int purgedSidecars = sidecarService.destroyExpired(this.sidecarConfiguration.sidecarExpirationThreshold());
         LOG.debug("Purged {} inactive sidecars.", purgedSidecars);
     }

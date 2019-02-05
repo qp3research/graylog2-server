@@ -35,6 +35,7 @@ import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import io.searchbox.indices.Analyze;
+import io.searchbox.params.Parameters;
 import org.graylog2.indexer.IndexFailure;
 import org.graylog2.indexer.IndexFailureImpl;
 import org.graylog2.indexer.IndexMapping;
@@ -221,6 +222,7 @@ public class Messages {
                 .index(index)
                 .type(IndexMapping.TYPE_MESSAGE)
                 .id(id)
+                .setParameter(Parameters.CONSISTENCY, "one")
                 .build();
     }
 

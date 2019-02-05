@@ -71,7 +71,7 @@ const SidecarsStore = Reflux.createStore({
         return response;
       },
       (error) => {
-        UserNotification.error(error.status === 400 ? error.responseMessage : `Fetching Sidecars failed with status: ${error.message}`,
+        UserNotification.error(`Fetching Sidecars failed with status: ${error}`,
           'Could not retrieve Sidecars');
       });
 
@@ -80,13 +80,12 @@ const SidecarsStore = Reflux.createStore({
 
   getSidecar(sidecarId) {
     const promise = fetchPeriodically('GET', URLUtils.qualifyUrl(`${this.sourceUrl}/${sidecarId}`));
-    promise.catch((error) => {
-      let errorMessage = `Fetching Sidecar failed with status: ${error}`;
-      if (error.status === 404) {
-        errorMessage = `Unable to find a sidecar with ID <${sidecarId}>, maybe it was inactive for too long.`;
-      }
-      UserNotification.error(errorMessage, 'Could not retrieve Sidecar');
-    });
+    promise
+      .catch(
+        error => {
+          UserNotification.error(`Fetching Sidecar failed with status: ${error}`,
+            'Could not retrieve Sidecar');
+        });
     SidecarsActions.getSidecar.promise(promise);
   },
 
@@ -98,7 +97,7 @@ const SidecarsStore = Reflux.createStore({
     const promise = fetch('PUT', URLUtils.qualifyUrl(`${this.sourceUrl}/${sidecarId}/action`), [action]);
     promise
       .catch(
-        (error) => {
+        error => {
           UserNotification.error(`Restarting Sidecar failed with status: ${error}`,
             'Could not restart Sidecar');
         });
@@ -109,7 +108,7 @@ const SidecarsStore = Reflux.createStore({
     const promise = fetchPeriodically('GET', URLUtils.qualifyUrl(`${this.sourceUrl}/${sidecarId}/action`));
     promise
       .catch(
-        (error) => {
+        error => {
           UserNotification.error(`Fetching Sidecar actions failed with status: ${error}`,
             'Could not retrieve Sidecar actions');
         });
@@ -137,8 +136,7 @@ const SidecarsStore = Reflux.createStore({
       return { node_id: sidecar.node_id, assignments: assignments };
     });
 
-    const promise = fetch('PUT', URLUtils.qualifyUrl(`${this.sourceUrl}/configurations`), { nodes: nodes });
-    promise
+    const promise = fetch('PUT', URLUtils.qualifyUrl(`${this.sourceUrl}/configurations`), { nodes: nodes })
       .then(
         (response) => {
           UserNotification.success('', `Configuration change for ${sidecars.length} collectors requested`);

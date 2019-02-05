@@ -18,9 +18,6 @@ package org.graylog2.contentpacks.facades;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableSet;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.model.ModelId;
 import org.graylog2.contentpacks.model.ModelType;
 import org.graylog2.contentpacks.model.ModelTypes;
@@ -30,9 +27,9 @@ import org.graylog2.contentpacks.model.entities.Entity;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.EntityExcerpt;
 import org.graylog2.contentpacks.model.entities.EntityV1;
+import org.graylog2.contentpacks.model.entities.EntityWithConstraints;
 import org.graylog2.contentpacks.model.entities.LookupDataAdapterEntity;
 import org.graylog2.contentpacks.model.entities.NativeEntity;
-import org.graylog2.contentpacks.model.entities.NativeEntityDescriptor;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.jackson.TypeReferences;
 import org.graylog2.lookup.db.DBDataAdapterService;
@@ -50,7 +47,7 @@ import static org.graylog2.contentpacks.model.entities.references.ReferenceMapUt
 import static org.graylog2.contentpacks.model.entities.references.ReferenceMapUtils.toValueMap;
 
 public class LookupDataAdapterFacade implements EntityFacade<DataAdapterDto> {
-    public static final ModelType TYPE_V1 = ModelTypes.LOOKUP_ADAPTER_V1;
+    public static final ModelType TYPE = ModelTypes.LOOKUP_ADAPTER;
 
     private final ObjectMapper objectMapper;
     private final DBDataAdapterService dataAdapterService;
@@ -65,8 +62,8 @@ public class LookupDataAdapterFacade implements EntityFacade<DataAdapterDto> {
         this.pluginMetaData = pluginMetaData;
     }
 
-    @VisibleForTesting
-    Entity exportNativeEntity(DataAdapterDto dataAdapterDto, EntityDescriptorIds entityDescriptorIds) {
+    @Override
+    public EntityWithConstraints exportNativeEntity(DataAdapterDto dataAdapterDto) {
         // TODO: Create independent representation of entity?
         final Map<String, Object> configuration = objectMapper.convertValue(dataAdapterDto.config(), TypeReferences.MAP_STRING_OBJECT);
         final LookupDataAdapterEntity lookupDataAdapterEntity = LookupDataAdapterEntity.create(
@@ -75,13 +72,14 @@ public class LookupDataAdapterFacade implements EntityFacade<DataAdapterDto> {
                 ValueReference.of(dataAdapterDto.description()),
                 toReferenceMap(configuration));
         final JsonNode data = objectMapper.convertValue(lookupDataAdapterEntity, JsonNode.class);
-        final Set<Constraint> constraints = versionConstraints(dataAdapterDto);
-        return EntityV1.builder()
-                .id(ModelId.of(entityDescriptorIds.getOrThrow(dataAdapterDto.id(), ModelTypes.LOOKUP_ADAPTER_V1)))
-                .type(ModelTypes.LOOKUP_ADAPTER_V1)
-                .constraints(ImmutableSet.copyOf(constraints))
+        final EntityV1 entity = EntityV1.builder()
+                .id(ModelId.of(dataAdapterDto.id()))
+                .type(ModelTypes.LOOKUP_ADAPTER)
                 .data(data)
                 .build();
+        final Set<Constraint> constraints = versionConstraints(dataAdapterDto);
+
+        return EntityWithConstraints.create(entity, constraints);
     }
 
 
@@ -117,7 +115,7 @@ public class LookupDataAdapterFacade implements EntityFacade<DataAdapterDto> {
                 .build();
 
         final DataAdapterDto savedDataAdapterDto = dataAdapterService.save(dataAdapterDto);
-        return NativeEntity.create(entity.id(), savedDataAdapterDto.id(), TYPE_V1, savedDataAdapterDto.title(), savedDataAdapterDto);
+        return NativeEntity.create(savedDataAdapterDto.name(), TYPE, savedDataAdapterDto);
     }
 
     @Override
@@ -135,13 +133,7 @@ public class LookupDataAdapterFacade implements EntityFacade<DataAdapterDto> {
 
         final Optional<DataAdapterDto> existingDataAdapter = dataAdapterService.get(name);
 
-        return existingDataAdapter.map(dataAdapter -> NativeEntity.create(entity.id(), dataAdapter.id(), TYPE_V1, dataAdapter.title(), dataAdapter));
-    }
-
-    @Override
-    public Optional<NativeEntity<DataAdapterDto>> loadNativeEntity(NativeEntityDescriptor nativeEntityDescriptor) {
-        return dataAdapterService.get(nativeEntityDescriptor.id().id())
-                .map(entity -> NativeEntity.create(nativeEntityDescriptor, entity));
+        return existingDataAdapter.map(dataAdapter -> NativeEntity.create(dataAdapter.id(), TYPE, dataAdapter));
     }
 
     @Override
@@ -152,8 +144,8 @@ public class LookupDataAdapterFacade implements EntityFacade<DataAdapterDto> {
     @Override
     public EntityExcerpt createExcerpt(DataAdapterDto dataAdapterDto) {
         return EntityExcerpt.builder()
-                .id(ModelId.of(dataAdapterDto.id()))
-                .type(ModelTypes.LOOKUP_ADAPTER_V1)
+                .id(ModelId.of(dataAdapterDto.name()))
+                .type(ModelTypes.LOOKUP_ADAPTER)
                 .title(dataAdapterDto.title())
                 .build();
     }
@@ -166,8 +158,8 @@ public class LookupDataAdapterFacade implements EntityFacade<DataAdapterDto> {
     }
 
     @Override
-    public Optional<Entity> exportEntity(EntityDescriptor entityDescriptor, EntityDescriptorIds entityDescriptorIds) {
+    public Optional<EntityWithConstraints> exportEntity(EntityDescriptor entityDescriptor) {
         final ModelId modelId = entityDescriptor.id();
-        return dataAdapterService.get(modelId.id()).map(dataAdapterDto -> exportNativeEntity(dataAdapterDto, entityDescriptorIds));
+        return dataAdapterService.get(modelId.id()).map(this::exportNativeEntity);
     }
 }

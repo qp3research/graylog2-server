@@ -5,7 +5,8 @@ import 'helpers/mocking/react-dom_mock';
 
 import TokenList from 'components/users/TokenList';
 
-jest.mock('components/common/ClipboardButton', () => 'clipboard-button');
+jest.mock('components/common/ClipboardButton', () => 'ClipboardButton');
+
 
 describe('<TokenList />', () => {
   const tokens = [

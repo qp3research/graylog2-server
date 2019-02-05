@@ -1,7 +1,15 @@
 import React from 'react';
-import { mount } from 'enzyme';
 
 import { CombinedProviderMock, StoreMock } from 'helpers/mocking';
+
+const e = () => {
+  // eslint-disable-next-line global-require
+  const enzyme = require('enzyme');
+  // eslint-disable-next-line global-require
+  const Adapter = require('enzyme-adapter-react-15');
+  enzyme.configure({ adapter: new Adapter() });
+  return enzyme;
+};
 
 describe('UserPreferencesButton', () => {
   beforeEach(() => {
@@ -19,7 +27,7 @@ describe('UserPreferencesButton', () => {
     // eslint-disable-next-line global-require
     const UserPreferencesButton = require('components/users/UserPreferencesButton');
     const userName = 'Full';
-    const instance = mount(<UserPreferencesButton userName={userName} />);
+    const instance = e().mount(<UserPreferencesButton userName={userName} />);
 
     expect(instance).toMatchSnapshot();
     expect(instance.find('button')).toBeDefined();

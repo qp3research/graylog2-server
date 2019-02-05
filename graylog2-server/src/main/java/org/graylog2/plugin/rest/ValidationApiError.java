@@ -18,7 +18,6 @@ package org.graylog2.plugin.rest;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableMap;
 import org.graylog2.plugin.database.validators.ValidationResult;
@@ -28,7 +27,6 @@ import java.util.Map;
 
 @JsonAutoDetect
 @AutoValue
-@JsonTypeName("ValidationApiError") // Explicitly indicates the class type to avoid AutoValue_ at the beginning
 public abstract class ValidationApiError implements GenericError {
     @JsonProperty
     public abstract Map<String, List<ValidationResult>> validationErrors();

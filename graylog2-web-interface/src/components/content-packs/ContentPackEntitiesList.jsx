@@ -5,6 +5,7 @@ import { Button, Modal, ButtonToolbar } from 'react-bootstrap';
 import { SearchForm, DataTable } from 'components/common';
 import BootstrapModalWrapper from 'components/bootstrap/BootstrapModalWrapper';
 
+import ObjectUtils from 'util/ObjectUtils';
 import ContentPackApplyParameter from './ContentPackApplyParameter';
 import ContentPackEntityConfig from './ContentPackEntityConfig';
 
@@ -29,7 +30,7 @@ class ContentPackEntitiesList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      filteredEntities: props.contentPack.entities || [],
+      filteredEntities: props.contentPack.entities,
       filter: undefined,
     };
   }
@@ -39,7 +40,7 @@ class ContentPackEntitiesList extends React.Component {
   }
 
   _filterEntities = (filter, entitiesArg) => {
-    const entities = entitiesArg || this.props.contentPack.entities;
+    const entities = ObjectUtils.clone(entitiesArg || this.props.contentPack.entities);
     if (!filter || filter.length <= 0) {
       this.setState({ filteredEntities: entities, filter: undefined });
       return;
@@ -47,16 +48,17 @@ class ContentPackEntitiesList extends React.Component {
 
     const regexp = RegExp(filter, 'i');
     const filteredEntities = entities.filter((entity) => {
-      return regexp.test(entity.title) || regexp.test(entity.description);
+      return regexp.test(this._entityTitle(entity)) || regexp.test(this._entityDescription(entity));
     });
     this.setState({ filteredEntities: filteredEntities, filter: filter });
   };
 
-  _entityIcon = (entity) => {
-    if (!entity.fromServer) {
-      return <span><i title="Content Pack" className={`fa fa-archive ${ContentPackEntitiesListStyle.contentPackEntity}`} /></span>;
-    }
-    return <span><i title="Server" className="fa fa-server" /></span>;
+  _entityTitle = (entity) => {
+    return (entity.data.title || {}).value || '';
+  };
+
+  _entityDescription = (entity) => {
+    return (entity.data.description || entity.data.name || {}).value || '';
   };
 
   _entityRowFormatter = (entity) => {
@@ -80,7 +82,7 @@ class ContentPackEntitiesList extends React.Component {
     const applyModal = (
       <BootstrapModalWrapper ref={(node) => { applyModalRef = node; }} bsSize="large">
         <Modal.Header closeButton>
-          <Modal.Title>Edit</Modal.Title>
+          <Modal.Title>Apply Parameter</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {applyParamComponent}
@@ -124,10 +126,9 @@ class ContentPackEntitiesList extends React.Component {
     const appliedParameterCount = (this.props.appliedParameter[entity.id] || []).length;
     return (
       <tr key={entity.id}>
-        <td className={ContentPackEntitiesListStyle.bigColumns}>{entity.title}</td>
-        <td>{entity.type.name}</td>
-        <td className={ContentPackEntitiesListStyle.bigColumns}>{entity.description}</td>
-        {!this.props.readOnly && <td>{this._entityIcon(entity)}</td>}
+        <td className={ContentPackEntitiesListStyle.bigColumns}>{this._entityTitle(entity)}</td>
+        <td>{entity.type}</td>
+        <td className={ContentPackEntitiesListStyle.bigColumns}>{this._entityDescription(entity)}</td>
         {!this.props.readOnly && <td>{appliedParameterCount}</td>}
         <td>
           <ButtonToolbar>
@@ -138,7 +139,7 @@ class ContentPackEntitiesList extends React.Component {
                     onClick={() => {
                       open();
                     }}>
-              Edit
+              Apply Parameter
             </Button>
             }
             <Button bsStyle="info"
@@ -157,7 +158,7 @@ class ContentPackEntitiesList extends React.Component {
   render() {
     const headers = this.props.readOnly ?
       ['Title', 'Type', 'Description', 'Action'] :
-      ['Title', 'Type', 'Description', 'Origin', 'Used Parameters', 'Action'];
+      ['Title', 'Type', 'Description', 'Applied Parameter', 'Action'];
 
     return (
       <div>
@@ -172,7 +173,7 @@ class ContentPackEntitiesList extends React.Component {
           id="entity-list"
           headers={headers}
           className={ContentPackEntitiesListStyle.scrollable}
-          sortBy={entity => entity.type.name}
+          sortByKey="type"
           filterKeys={[]}
           rows={this.state.filteredEntities}
           dataRowFormatter={this._entityRowFormatter}

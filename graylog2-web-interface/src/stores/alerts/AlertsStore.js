@@ -5,8 +5,8 @@ import fetch from 'logic/rest/FetchProvider';
 
 import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
-import ActionsProvider from 'injection/ActionsProvider';
 
+import ActionsProvider from 'injection/ActionsProvider';
 const AlertsActions = ActionsProvider.getActions('Alerts');
 
 const AlertsStore = Reflux.createStore({
@@ -26,8 +26,8 @@ const AlertsStore = Reflux.createStore({
     AlertsActions.list.promise(promise);
   },
 
-  listPaginated(streamId, skip, limit, state = 'any') {
-    const url = URLUtils.qualifyUrl(ApiRoutes.AlertsApiController.listPaginated(streamId, skip, limit, state).url);
+  listPaginated(streamId, skip, limit) {
+    const url = URLUtils.qualifyUrl(ApiRoutes.AlertsApiController.listPaginated(streamId, skip, limit).url);
     const promise = fetch('GET', url);
     promise
       .then(

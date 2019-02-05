@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Set } from 'immutable';
 
 import { DataTable } from 'components/common';
 import { Badge } from 'react-bootstrap';
@@ -8,45 +7,29 @@ import './ContentPackConstraints.css';
 
 class ContentPackConstraints extends React.Component {
   static propTypes = {
-    constraints: PropTypes.oneOfType([
-      PropTypes.object,
-      PropTypes.array,
-    ]),
+    constraints: PropTypes.array,
     isFulfilled: PropTypes.bool,
   };
 
   static defaultProps = {
-    constraints: Set(),
+    constraints: [],
     isFulfilled: false,
   };
 
   _rowFormatter = (item) => {
-    const constraint = item.constraint || item;
     const fulfilledIcon = item.fulfilled || this.props.isFulfilled ? <i className="fa fa-check" /> : <i className="fa fa-times" />;
     const fulfilledBg = item.fulfilled || this.props.isFulfilled ? 'success' : 'failure';
-    const name = constraint.type === 'server-version' ? 'Graylog' : constraint.plugin;
     return (
-      <tr key={constraint.id}>
-        <td>{name}</td>
-        <td>{constraint.type}</td>
-        <td>{constraint.version}</td>
+      <tr key={item.id}>
+        <td>{item.type}</td>
+        <td>{item.version}</td>
         <td><Badge className={fulfilledBg}>{fulfilledIcon}</Badge></td>
       </tr>
     );
   };
 
   render() {
-    const headers = ['Name', 'Type', 'Version', 'Fulfilled'];
-    let constraints = this.props.constraints.map((constraint) => {
-      const newConstraint = constraint.constraint || constraint;
-      newConstraint.fulfilled = constraint.fulfilled;
-      return newConstraint;
-    });
-
-    if (typeof constraints.toArray === 'function') {
-      constraints = constraints.toArray();
-    }
-
+    const headers = ['Type', 'Version', 'Fulfilled'];
     return (
       <div>
         <h2>Constraints</h2>
@@ -56,9 +39,9 @@ class ContentPackConstraints extends React.Component {
           id="content-packs-constraints"
           headers={headers}
           headerCellFormatter={header => <th>{header}</th>}
-          sortBy={(row) => { return row.constraint ? row.constraint.type : row.type; }}
+          sortByKey="type"
           dataRowFormatter={this._rowFormatter}
-          rows={constraints}
+          rows={this.props.constraints}
           filterKeys={[]}
         />
       </div>

@@ -63,7 +63,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<HttpRequest> {
 
             // send on to raw message handler
             writeResponse(channel, keepAlive, httpRequestVersion, HttpResponseStatus.ACCEPTED, origin);
-            ctx.fireChannelRead(buffer.retain());
+            ctx.fireChannelRead(buffer);
         } else {
             writeResponse(channel, keepAlive, httpRequestVersion, HttpResponseStatus.NOT_FOUND, origin);
         }

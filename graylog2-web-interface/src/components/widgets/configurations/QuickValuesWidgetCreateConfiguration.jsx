@@ -8,9 +8,11 @@ class QuickValuesWidgetCreateConfiguration extends React.Component {
     onChange: PropTypes.func.isRequired,
   };
 
-  static initialConfiguration = {
-    show_pie_chart: true,
-    show_data_table: true,
+  getInitialConfiguration = () => {
+    return {
+      show_pie_chart: true,
+      show_data_table: true,
+    };
   };
 
   render() {

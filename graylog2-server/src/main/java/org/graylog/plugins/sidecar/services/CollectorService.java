@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 
 @Singleton
 public class CollectorService extends PaginatedDbService<Collector> {
-    public static final String COLLECTION_NAME = "sidecar_collectors";
+    private static final String COLLECTION_NAME = "sidecar_collectors";
 
     @Inject
     public CollectorService(MongoConnection mongoConnection,
@@ -51,24 +51,6 @@ public class CollectorService extends PaginatedDbService<Collector> {
     @Nullable
     public Collector findByName(String name) {
         return db.findOne(DBQuery.is("name", name));
-    }
-
-    @Nullable
-    public Collector findByNameAndOs(String name, String operatingSystem) {
-        return db.findOne(
-                DBQuery.and(
-                        DBQuery.is("name", name),
-                        DBQuery.is("node_operating_system", operatingSystem))
-        );
-    }
-
-    @Nullable
-    public Collector findByNameExcludeId(String name, String id) {
-        return db.findOne(
-                DBQuery.and(
-                    DBQuery.is("name", name),
-                    DBQuery.notEquals("_id", id))
-        );
     }
 
     public long count() {
@@ -99,8 +81,9 @@ public class CollectorService extends PaginatedDbService<Collector> {
                 request.serviceType(),
                 request.nodeOperatingSystem(),
                 request.executablePath(),
+                request.configurationPath(),
                 request.executeParameters(),
-                request.validationParameters(),
+                request.validationCommand(),
                 request.defaultTemplate());
     }
 

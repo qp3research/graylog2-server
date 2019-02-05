@@ -3,7 +3,6 @@ import renderer from 'react-test-renderer';
 import { mount } from 'enzyme';
 import 'helpers/mocking/react-dom_mock';
 
-import ContentPack from 'logic/content-packs/ContentPack';
 import ContentPackInstall from 'components/content-packs/ContentPackInstall';
 
 describe('<ContentPackInstall />', () => {
@@ -15,27 +14,25 @@ describe('<ContentPackInstall />', () => {
   };
 
   const entity = {
-    type: {
-      name: 'grok_pattern',
-      version: '1',
-    },
     data: {
-      title: { '@type': 'string', '@value': 'franz' },
-      descr: { '@type': 'string', '@value': 'hans' },
+      title: { type: 'string', value: 'franz' },
+      descr: { type: 'string', value: 'hans' },
     },
   };
 
-  const contentPack = ContentPack.builder()
-    .id(1)
-    .rev(2)
-    .name('UFW Grok Patterns')
-    .description('Grok Patterns to extract informations from UFW logfiles')
-    .summary('This is a summary')
-    .url('www.graylog.com')
-    .vendor('graylog.com')
-    .parameters([parameter])
-    .entities([entity])
-    .build();
+  const contentPack = {
+    id: '1',
+    rev: 2,
+    title: 'UFW Grok Patterns',
+    description: 'Grok Patterns to extract informations from UFW logfiles',
+    version: '1.0',
+    states: ['installed', 'edited'],
+    summary: 'This is a summary',
+    vendor: 'graylog.com',
+    url: 'www.graylog.com',
+    parameters: [parameter],
+    entities: [entity],
+  };
 
   it('should render a install', () => {
     const wrapper = renderer.create(<ContentPackInstall contentPack={contentPack} />);
@@ -44,9 +41,9 @@ describe('<ContentPackInstall />', () => {
 
   it('should call install when called', () => {
     const installFn = jest.fn((id, rev, param) => {
-      expect(id).toBe(1);
+      expect(id).toBe('1');
       expect(rev).toBe(2);
-      expect(param).toEqual({ comment: 'Test', parameters: { PARAM: { '@type': 'string', '@value': 'parameter' } } });
+      expect(param).toEqual({ comment: 'Test', parameters: { PARAM: { type: 'string', value: 'parameter' } } });
     });
 
     const wrapper = mount(<ContentPackInstall contentPack={contentPack} onInstall={installFn} />);

@@ -13,7 +13,6 @@ import 'components/content-packs/ContentPackDetails.css';
 const ContentPackDetails = (props) => {
   const markdownDescription = markdown.toHTML(props.contentPack.description || '');
   const contentPack = props.contentPack;
-  const constraints = props.constraints;
 
   return (
     <Row>
@@ -33,22 +32,19 @@ const ContentPackDetails = (props) => {
               { contentPack.entities && !props.verbose && (<span><dt>Entities:</dt> <dd>{contentPack.entities.length}</dd></span>) }
             </dl>
           </div>
-          { contentPack.description &&
-          <div>
-            <h2>Description</h2>
-            <br />
-            <Well>
-              {/* eslint-disable-next-line react/no-danger */}
-              <div dangerouslySetInnerHTML={{ __html: markdownDescription }} />
-            </Well>
-          </div> }
+          <h2>Description</h2>
+          <br />
+          <Well>
+            {/* eslint-disable-next-line react/no-danger */}
+            <div dangerouslySetInnerHTML={{ __html: markdownDescription }} />
+          </Well>
           <br />
           { contentPack.status && <ContentPackStatus states={contentPack.states} /> }
           <br />
           <br />
-          { contentPack.constraints && props.showConstraints &&
+          { contentPack.requires && props.showConstraints &&
           <div>
-            <ContentPackConstraints constraints={constraints} />
+            <ContentPackConstraints constraints={contentPack.requires} />
             <br />
           </div>
           }
@@ -66,7 +62,6 @@ const ContentPackDetails = (props) => {
 
 ContentPackDetails.propTypes = {
   contentPack: PropTypes.object.isRequired,
-  constraints: PropTypes.arrayOf(PropTypes.object),
   verbose: PropTypes.bool,
   offset: PropTypes.number,
   showConstraints: PropTypes.bool,
@@ -76,7 +71,6 @@ ContentPackDetails.defaultProps = {
   offset: 1,
   verbose: false,
   showConstraints: false,
-  constraints: [],
 };
 
 export default ContentPackDetails;

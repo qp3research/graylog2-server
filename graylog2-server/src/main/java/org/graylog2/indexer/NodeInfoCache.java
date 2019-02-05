@@ -18,9 +18,9 @@ package org.graylog2.indexer;
 
 import com.github.joschi.jadconfig.util.Duration;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.graylog2.indexer.cluster.Cluster;
+import org.graylog2.indexer.guava.FunctionCacheLoader;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,10 +37,10 @@ public class NodeInfoCache {
     public NodeInfoCache(Cluster cluster) {
         this.nodeNameCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(EXPIRE_DURATION.getQuantity(), EXPIRE_DURATION.getUnit())
-                .build(CacheLoader.from(cluster::nodeIdToName));
+                .build(new FunctionCacheLoader<>(cluster::nodeIdToName));
         this.hostNameCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(EXPIRE_DURATION.getQuantity(), EXPIRE_DURATION.getUnit())
-                .build(CacheLoader.from(cluster::nodeIdToHostName));
+                .build(new FunctionCacheLoader<>(cluster::nodeIdToHostName));
     }
 
     public Optional<String> getNodeName(String nodeId) {

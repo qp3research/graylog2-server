@@ -2,6 +2,7 @@ import ActionsProvider from 'injection/ActionsProvider';
 const AlertsActions = ActionsProvider.getActions('Alerts');
 
 import StoreProvider from 'injection/StoreProvider';
+const AlertsStore = StoreProvider.getStore('Alerts');
 const StreamsStore = StoreProvider.getStore('Streams');
 
 import DateTime from 'logic/datetimes/DateTime';

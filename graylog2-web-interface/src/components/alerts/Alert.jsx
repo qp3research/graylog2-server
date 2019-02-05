@@ -13,13 +13,9 @@ import styles from './Alert.css';
 class Alert extends React.Component {
   static propTypes = {
     alert: PropTypes.object.isRequired,
-    alertCondition: PropTypes.object,
-    stream: PropTypes.object.isRequired,
-    conditionType: PropTypes.object.isRequired,
-  };
-
-  static defaultProps = {
-    alertCondition: {},
+    alertConditions: PropTypes.array.isRequired,
+    streams: PropTypes.array.isRequired,
+    conditionTypes: PropTypes.object.isRequired,
   };
 
   state = {
@@ -27,14 +23,17 @@ class Alert extends React.Component {
   };
 
   render() {
-    const { alert, alertCondition, stream, conditionType } = this.props;
+    const alert = this.props.alert;
+    const condition = this.props.alertConditions.find(alertCondition => alertCondition.id === alert.condition_id);
+    const stream = this.props.streams.find(s => s.id === alert.stream_id);
+    const conditionType = condition ? this.props.conditionTypes[condition.type] : {};
 
     let alertTitle;
-    if (alertCondition) {
+    if (condition) {
       alertTitle = (
         <span>
           <Link to={Routes.show_alert(alert.id)}>
-            {alertCondition.title || 'Untitled alert'}
+            {condition.title || 'Untitled alert'}
           </Link>
           {' '}
           <small>on stream <em>{stream.title}</em></small>

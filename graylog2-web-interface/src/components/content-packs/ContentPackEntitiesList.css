@@ -14,7 +14,3 @@
 :local(.bigColumns) {
     word-wrap: break-word;
 }
-
-:local(.contentPackEntity) {
-    color: rgba(158, 31, 99, 0.43);
-}

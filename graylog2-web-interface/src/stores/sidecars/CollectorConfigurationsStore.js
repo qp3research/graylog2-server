@@ -1,6 +1,5 @@
 import Reflux from 'reflux';
 import URI from 'urijs';
-import lodash from 'lodash';
 
 import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
@@ -45,20 +44,8 @@ const CollectorConfigurationsStore = Reflux.createStore({
     return fetch('GET', URLUtils.qualifyUrl(uri));
   },
 
-  _fetchUploads({ page }) {
-    const baseUrl = `${this.sourceUrl}/configurations/uploads`;
-    const search = {
-      page: page,
-    };
-
-    const uri = URI(baseUrl).search(search).toString();
-
-    return fetch('GET', URLUtils.qualifyUrl(uri));
-  },
-
   all() {
-    const promise = this._fetchConfigurations({ pageSize: 0 });
-    promise
+    const promise = this._fetchConfigurations({ pageSize: 0 })
       .then(
         (response) => {
           this.configurations = response.configurations;
@@ -75,8 +62,7 @@ const CollectorConfigurationsStore = Reflux.createStore({
   },
 
   list({ query = '', page = 1, pageSize = 10 }) {
-    const promise = this._fetchConfigurations({ query: query, page: page, pageSize: pageSize });
-    promise
+    const promise = this._fetchConfigurations({ query: query, page: page, pageSize: pageSize })
       .then(
         (response) => {
           this.query = response.query;
@@ -99,44 +85,19 @@ const CollectorConfigurationsStore = Reflux.createStore({
     CollectorConfigurationsActions.list.promise(promise);
   },
 
-  listUploads({ page = 1 }) {
-    const promise = this._fetchUploads({ page: page });
-    promise
-      .catch(
-        (error) => {
-          UserNotification.error(`Fetching configuration uploads failed with status: ${error}`,
-            'Could not retrieve configurations');
-        });
-
-    CollectorConfigurationsActions.listUploads.promise(promise);
-  },
-
   refreshList() {
     this.list({ query: this.query, page: this.page, pageSize: this.pageSize });
   },
 
   getConfiguration(configurationId) {
     const promise = fetch('GET', URLUtils.qualifyUrl(`${this.sourceUrl}/configurations/${configurationId}`));
-    promise.catch((error) => {
-      let errorMessage = `Fetching Configuration failed with status: ${error}`;
-      if (error.status === 404) {
-        errorMessage = `Unable to find a Configuration with ID <${configurationId}>, please ensure it was not deleted.`;
-      }
-      UserNotification.error(errorMessage, 'Could not retrieve Configuration');
-    });
+    promise
+      .catch(
+        (error) => {
+          UserNotification.error(`Fetching collector configuration failed with status: ${error}`,
+            'Could not retrieve configuration');
+        });
     CollectorConfigurationsActions.getConfiguration.promise(promise);
-  },
-
-  getConfigurationSidecars(configurationId) {
-    const promise = fetch('GET', URLUtils.qualifyUrl(`${this.sourceUrl}/configurations/${configurationId}/sidecars`));
-    promise.catch((error) => {
-      let errorMessage = `Fetching Configuration failed with status: ${error}`;
-      if (error.status === 404) {
-        errorMessage = `Unable to find a Configuration with ID <${configurationId}>, please ensure it was not deleted.`;
-      }
-      UserNotification.error(errorMessage, 'Could not retrieve Configuration');
-    });
-    CollectorConfigurationsActions.getConfigurationSidecars.promise(promise);
   },
 
   renderPreview(template) {
@@ -167,7 +128,7 @@ const CollectorConfigurationsStore = Reflux.createStore({
         UserNotification.success('', 'Configuration successfully created');
         return response;
       }, (error) => {
-        UserNotification.error(error.status === 400 ? error.responseMessage : `Creating configuration failed with status: ${error.message}`,
+        UserNotification.error(`Creating configuration failed with status: ${error.message}`,
           'Could not save configuration');
       });
 
@@ -184,8 +145,8 @@ const CollectorConfigurationsStore = Reflux.createStore({
         this.refreshList();
         return response;
       }, (error) => {
-        UserNotification.error(`Updating Configuration failed: ${error.status === 400 ? error.responseMessage : error.message}`,
-          `Could not update Configuration ${configuration.name}`);
+        UserNotification.error(`Updating configuration failed with status: ${error.message}`,
+          'Could not update configuration');
       });
 
     CollectorConfigurationsActions.updateConfiguration.promise(promise);
@@ -218,29 +179,20 @@ const CollectorConfigurationsStore = Reflux.createStore({
         this.refreshList();
         return response;
       }, (error) => {
-        UserNotification.error(`Deleting Configuration failed: ${error.status === 400 ? error.responseMessage : error.message}`,
-          `Could not delete Configuration ${configuration.name}`);
+        UserNotification.error(`Deleting Output "${configuration.name}" failed with status: ${error.message}`,
+          'Could not delete Configuration');
       });
 
     CollectorConfigurationsActions.delete.promise(promise);
   },
 
-  validate(configuration) {
-    // set minimum api defaults for faster validation feedback
-    const payload = {
-      name: ' ',
-      collector_id: ' ',
-      color: ' ',
-      template: ' ',
-    };
-    lodash.merge(payload, configuration);
-
-    const promise = fetch('POST', URLUtils.qualifyUrl(`${this.sourceUrl}/configurations/validate`), payload);
+  validate(name) {
+    const promise = fetch('GET', URLUtils.qualifyUrl(`${this.sourceUrl}/configurations/validate/?name=${name}`));
     promise
       .then(
         response => response,
         error => (
-          UserNotification.error(`Validating configuration "${payload.name}" failed with status: ${error.message}`,
+          UserNotification.error(`Validating configuration with name "${name}" failed with status: ${error.message}`,
             'Could not validate configuration')
         ));
 

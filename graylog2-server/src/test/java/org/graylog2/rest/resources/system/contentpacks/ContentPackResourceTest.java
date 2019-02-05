@@ -21,13 +21,9 @@ import org.graylog2.contentpacks.ContentPackInstallationPersistenceService;
 import org.graylog2.contentpacks.ContentPackPersistenceService;
 import org.graylog2.contentpacks.ContentPackService;
 import org.graylog2.contentpacks.model.ContentPack;
-import org.graylog2.contentpacks.model.ContentPackInstallation;
 import org.graylog2.contentpacks.model.ModelId;
-import org.graylog2.contentpacks.model.constraints.ConstraintCheckResult;
 import org.graylog2.jackson.AutoValueSubtypeResolver;
 import org.graylog2.rest.models.system.contenpacks.responses.ContentPackList;
-import org.graylog2.rest.models.system.contenpacks.responses.ContentPackMetadata;
-import org.graylog2.rest.models.system.contenpacks.responses.ContentPackResponse;
 import org.graylog2.rest.models.system.contenpacks.responses.ContentPackRevisions;
 import org.graylog2.shared.bindings.GuiceInjectorHolder;
 import org.graylog2.shared.bindings.providers.ObjectMapperProvider;
@@ -38,7 +34,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.Collections;
@@ -62,6 +57,7 @@ public class ContentPackResourceTest {
             "    \"description\": \"### We do not saw!\\n But we might kill!\",\n" +
             "    \"vendor\": \"Graylog, Inc. <egwene@graylog.com>\",\n" +
             "    \"url\": \"https://github.com/graylog-labs/small-content-pack.git\",\n" +
+            "    \"requires\": [ {\"type\": \"server-version\", \"version\": \">=3.0.0\"} ],\n" +
             "    \"parameters\": [ ],\n" +
             "    \"entities\": [ ]\n" +
             "}";
@@ -75,9 +71,6 @@ public class ContentPackResourceTest {
     private ContentPackPersistenceService contentPackPersistenceService;
     @Mock
     private ContentPackInstallationPersistenceService contentPackInstallationPersistenceService;
-
-    @Mock
-    private Set<ContentPackInstallation> contentPackInstallations;
 
     private ContentPackResource contentPackResource;
     private ObjectMapper objectMapper;
@@ -111,8 +104,7 @@ public class ContentPackResourceTest {
     public void listAndLatest() throws Exception {
         final ContentPack contentPack = objectMapper.readValue(CONTENT_PACK, ContentPack.class);
         final Set<ContentPack> contentPacks = Collections.singleton(contentPack);
-        final Map<ModelId, Map<Integer, ContentPackMetadata>> metaDataMap = Collections.emptyMap();
-        final ContentPackList expectedList = ContentPackList.create(contentPacks.size(), contentPacks, metaDataMap);
+        final ContentPackList expectedList = ContentPackList.create(contentPacks.size(), contentPacks);
 
         when(contentPackPersistenceService.loadAll()).thenReturn(Collections.singleton(contentPack));
         final ContentPackList contentPackList = contentPackResource.listContentPacks();
@@ -129,11 +121,9 @@ public class ContentPackResourceTest {
     public void getContentPack() throws Exception {
         final ContentPack contentPack = objectMapper.readValue(CONTENT_PACK, ContentPack.class);
         final Set<ContentPack> contentPackSet = Collections.singleton(contentPack);
-        final Set<ConstraintCheckResult> constraints = Collections.emptySet();
 
         final Map<Integer, ContentPack> contentPacks = Collections.singletonMap(1, contentPack);
-        final Map<Integer, Set<ConstraintCheckResult>> constraintMap = Collections.singletonMap(1, constraints);
-        final ContentPackRevisions expectedRevisions = ContentPackRevisions.create(contentPacks, constraintMap);
+        final ContentPackRevisions expectedRevisions = ContentPackRevisions.create(contentPacks);
         final ModelId id = ModelId.of("1");
 
         when(contentPackPersistenceService.findAllById(id)).thenReturn(contentPackSet);
@@ -142,9 +132,9 @@ public class ContentPackResourceTest {
         assertThat(contentPackRevisions).isEqualTo(expectedRevisions);
 
         when(contentPackPersistenceService.findByIdAndRevision(id, 1)).thenReturn(Optional.ofNullable(contentPack));
-        final ContentPackResponse contentPackResponse = contentPackResource.getContentPackRevisions(id, 1);
+        final ContentPack contentPackResult = contentPackResource.listContentPackRevisions(id, 1);
         verify(contentPackPersistenceService, times(1)).findByIdAndRevision(id, 1);
-        assertThat(contentPackResponse.contentPack()).isEqualTo(contentPack);
+        assertThat(contentPackResult).isEqualTo(contentPack);
     }
 
     @Test
@@ -159,34 +149,6 @@ public class ContentPackResourceTest {
         verify(contentPackPersistenceService, times(1)).deleteByIdAndRevision(id, 1);
     }
 
-    @Test
-    public void notDeleteContentPack() throws Exception {
-        final ModelId id = ModelId.of("1");
-        when(contentPackInstallations.size()).thenReturn(1);
-        when(contentPackInstallationPersistenceService.findByContentPackId(id)).thenReturn(contentPackInstallations);
-        boolean exceptionCalled = false;
-        try {
-            contentPackResource.deleteContentPack(id);
-        } catch (BadRequestException e) {
-            exceptionCalled = true;
-        }
-        assertThat(exceptionCalled).isEqualTo(true);
-        verify(contentPackInstallationPersistenceService, times(1)).findByContentPackId(id);
-        verify(contentPackPersistenceService, times(0)).deleteById(id);
-
-        when(contentPackInstallations.size()).thenReturn(1);
-        when(contentPackInstallationPersistenceService.findByContentPackIdAndRevision(id, 1)).thenReturn(contentPackInstallations);
-        exceptionCalled = false;
-        try {
-            contentPackResource.deleteContentPack(id, 1);
-        } catch (BadRequestException e) {
-            exceptionCalled = true;
-        }
-        assertThat(exceptionCalled).isEqualTo(true);
-        verify(contentPackInstallationPersistenceService, times(1)).findByContentPackIdAndRevision(id, 1);
-        verify(contentPackPersistenceService, times(0)).deleteByIdAndRevision(id, 1);
-    }
-
     static class PermittedTestResource extends ContentPackResource {
         PermittedTestResource(ContentPackService contentPackService,
                               ContentPackPersistenceService contentPackPersistenceService,
@@ -196,11 +158,6 @@ public class ContentPackResourceTest {
 
         @Override
         protected boolean isPermitted(String permission) {
-            return true;
-        }
-
-        @Override
-        protected boolean isPermitted(String permission, String id) {
             return true;
         }
 

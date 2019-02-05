@@ -24,9 +24,7 @@ import com.google.common.io.Resources;
 import org.graylog2.contentpacks.model.ModelId;
 import org.graylog2.contentpacks.model.ModelTypes;
 import org.graylog2.contentpacks.model.ModelVersion;
-import org.graylog2.contentpacks.model.constraints.GraylogVersionConstraint;
 import org.graylog2.jackson.AutoValueSubtypeResolver;
-import org.graylog2.plugin.Version;
 import org.graylog2.shared.bindings.providers.ObjectMapperProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +53,7 @@ public class EntityTest {
 
         final EntityV1 entity = EntityV1.builder()
                 .id(ModelId.of("fafd32d1-7f71-41a8-89f5-53c9b307d4d5"))
-                .type(ModelTypes.INPUT_V1)
+                .type(ModelTypes.INPUT)
                 .version(ModelVersion.of("1"))
                 .data(entityData)
                 .build();
@@ -64,8 +62,7 @@ public class EntityTest {
         final JsonNode jsonNode = objectMapper.convertValue(entity, JsonNode.class);
         assertThat(jsonNode).isNotNull();
         assertThat(jsonNode.path("id").asText()).isEqualTo("fafd32d1-7f71-41a8-89f5-53c9b307d4d5");
-        assertThat(jsonNode.path("type").path("name").asText()).isEqualTo("input");
-        assertThat(jsonNode.path("type").path("version").asText()).isEqualTo("1");
+        assertThat(jsonNode.path("type").asText()).isEqualTo("input");
         assertThat(jsonNode.path("v").asText()).isEqualTo("1");
         final JsonNode dataNode = jsonNode.path("data");
         assertThat(dataNode.isObject()).isTrue();
@@ -95,9 +92,8 @@ public class EntityTest {
         final EntityV1 entityV1 = (EntityV1) entity;
         assertThat(entityV1).isNotNull();
         assertThat(entityV1.version()).isEqualTo(ModelVersion.of("1"));
-        assertThat(entityV1.type()).isEqualTo(ModelTypes.INPUT_V1);
+        assertThat(entityV1.type()).isEqualTo(ModelTypes.INPUT);
         assertThat(entityV1.id()).isEqualTo(ModelId.of("78547c87-af21-4292-8e57-614da5baf6c3"));
         assertThat(entityV1.data()).isEqualTo(expectedData);
-        assertThat(entityV1.constraints()).contains(GraylogVersionConstraint.of(Version.from(3,0,0)));
     }
 }

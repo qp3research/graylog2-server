@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { findIndex } from 'lodash';
 
-import { Button, Modal, ButtonToolbar, Badge } from 'react-bootstrap';
+import { Button, Modal, ButtonToolbar } from 'react-bootstrap';
 import BootstrapModalWrapper from 'components/bootstrap/BootstrapModalWrapper';
 import { DataTable, SearchForm } from 'components/common';
 
@@ -18,21 +17,19 @@ class ContentPackParameterList extends React.Component {
     readOnly: PropTypes.bool,
     onDeleteParameter: PropTypes.func,
     onAddParameter: PropTypes.func,
-    appliedParameter: PropTypes.object,
   };
 
   static defaultProps = {
     readOnly: false,
     onDeleteParameter: () => {},
     onAddParameter: () => {},
-    appliedParameter: {},
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      filteredParameters: props.contentPack.parameters || [],
+      filteredParameters: props.contentPack.parameters,
       filter: undefined,
     };
   }
@@ -41,23 +38,7 @@ class ContentPackParameterList extends React.Component {
     this._filterParameters(this.state.filter, newProps.contentPack.parameters);
   }
 
-  _parameterApplied = (paramName) => {
-    const entityIds = Object.keys(this.props.appliedParameter);
-    /* eslint-disable-next-line no-restricted-syntax, guard-for-in */
-    for (const i in entityIds) {
-      const params = this.props.appliedParameter[entityIds[i]];
-      if (findIndex(params, { paramName: paramName }) >= 0) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   _parameterRowFormatter = (parameter) => {
-    const parameterApplied = this._parameterApplied(parameter.name);
-    const buttonTitle = parameterApplied ? 'Still in use' : 'Delete Parameter';
-    const icon = parameterApplied ? 'fa fa-check' : 'fa fa-times';
-    const bsStyle = parameterApplied ? 'success' : 'failure';
     return (
       <tr key={parameter.title}>
         <td className={ContentPackParameterListStyle.bigColumns}>{parameter.title}</td>
@@ -65,15 +46,10 @@ class ContentPackParameterList extends React.Component {
         <td className={ContentPackParameterListStyle.bigColumns}>{parameter.description}</td>
         <td>{parameter.type}</td>
         <td>{ContentPackUtils.convertToString(parameter)}</td>
-        <td><Badge className={bsStyle}><i className={icon} /></Badge></td>
         {!this.props.readOnly &&
         <td>
           <ButtonToolbar>
-            <Button bsStyle="primary"
-                    bsSize="xs"
-                    title={buttonTitle}
-                    disabled={parameterApplied}
-                    onClick={() => { this.props.onDeleteParameter(parameter); }}>
+            <Button bsStyle="primary" bsSize="small" onClick={() => { this.props.onDeleteParameter(parameter); }}>
               Delete
             </Button>{this._parameterModal(parameter)}
           </ButtonToolbar>
@@ -91,7 +67,7 @@ class ContentPackParameterList extends React.Component {
       modalRef.close();
     };
 
-    const openModal = () => {
+    const open = () => {
       modalRef.open();
     };
 
@@ -99,7 +75,7 @@ class ContentPackParameterList extends React.Component {
       editParameter.addNewParameter();
     };
 
-    const size = parameter ? 'xsmall' : 'small';
+    const size = parameter ? 'small' : 'small';
     const name = parameter ? 'Edit' : 'Create parameter';
 
     const modal = (
@@ -128,15 +104,12 @@ class ContentPackParameterList extends React.Component {
     );
 
     return (
-      <React.Fragment>
-        <Button bsStyle="info"
-                bsSize={size}
-                title="Edit Modal"
-                onClick={openModal}>
-          {name}
-        </Button>
+      <Button bsStyle="info"
+              bsSize={size}
+              onClick={() => { open(); }}>
+        {name}
         {modal}
-      </React.Fragment>
+      </Button>
     );
   }
 
@@ -156,8 +129,8 @@ class ContentPackParameterList extends React.Component {
 
   render() {
     const headers = this.props.readOnly ?
-      ['Title', 'Name', 'Description', 'Value Type', 'Default Value', 'Used'] :
-      ['Title', 'Name', 'Description', 'Value Type', 'Default Value', 'Used', 'Action'];
+      ['Title', 'Name', 'Description', 'Value Type', 'Default Value'] :
+      ['Title', 'Name', 'Description', 'Value Type', 'Default Value', 'Action'];
     return (
       <div>
         <h2>Parameters list</h2>

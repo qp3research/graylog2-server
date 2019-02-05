@@ -93,7 +93,7 @@ public class AlertResource extends RestResource {
                                           @ApiParam(name = "limit", value = "The maximum number of elements to return.", required = true)
                                           @QueryParam("limit") @DefaultValue("300") int limit,
                                           @ApiParam(name = "state", value = "Alert state (resolved/unresolved)", required = false)
-                                          @QueryParam("state") String state) {
+                                          @QueryParam("state") String state) throws NotFoundException {
         final List<String> allowedStreamIds = getAllowedStreamIds();
 
         AlertState alertState;

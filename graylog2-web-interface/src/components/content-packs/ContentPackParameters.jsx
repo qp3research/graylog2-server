@@ -39,7 +39,7 @@ class ContentPackParameters extends React.Component {
   }
 
   _addNewParameter = (newParameter, oldParameter) => {
-    let newContentPackBuilder = this.props.contentPack.toBuilder();
+    const newContentPack = ObjectUtils.clone(this.props.contentPack);
     const newAppliedParameter = ObjectUtils.clone(this.props.appliedParameter);
     if (oldParameter) {
       /* If the name of the parameter changed we need to update the reference in appliedParameter */
@@ -52,10 +52,12 @@ class ContentPackParameters extends React.Component {
         });
       });
       /* If we update a parameter we remove the old one first */
-      newContentPackBuilder = newContentPackBuilder.removeParameter(oldParameter);
+      lodash.remove(newContentPack.parameters, (parameter) => {
+        return parameter.name === oldParameter.name;
+      });
     }
-    newContentPackBuilder.addParameter(newParameter);
-    this.props.onStateChange({ contentPack: newContentPackBuilder.build(), appliedParameter: newAppliedParameter });
+    newContentPack.parameters.push(newParameter);
+    this.props.onStateChange({ contentPack: newContentPack, appliedParameter: newAppliedParameter });
   };
 
   _onParameterApply = (id, configKey, paramName) => {
@@ -73,7 +75,7 @@ class ContentPackParameters extends React.Component {
   };
 
   _deleteParameter = (parameter) => {
-    const { contentPack } = this.props;
+    const newContentPack = ObjectUtils.clone(this.props.contentPack);
     const newAppliedParameter = ObjectUtils.clone(this.props.appliedParameter);
     /* If we delete a parameter we need to remove the reference from appliedParameter */
     Object.keys(newAppliedParameter).forEach((id) => {
@@ -82,7 +84,7 @@ class ContentPackParameters extends React.Component {
         delete newAppliedParameter[id];
       }
     });
-    const newContentPack = contentPack.toBuilder().removeParameter(parameter).build();
+    lodash.remove(newContentPack.parameters, (param) => { return param.name === parameter.name; });
     this.props.onStateChange({ contentPack: newContentPack, appliedParameter: newAppliedParameter });
     this._closeConfirmModal();
   };
@@ -115,7 +117,7 @@ class ContentPackParameters extends React.Component {
             <ContentPackParameterList contentPack={this.props.contentPack}
                                       onAddParameter={this._addNewParameter}
                                       onDeleteParameter={this._openConfirmModal}
-                                      appliedParameter={this.props.appliedParameter} />
+            />
             {this._confirmationModal()}
           </Col>
         </Row>

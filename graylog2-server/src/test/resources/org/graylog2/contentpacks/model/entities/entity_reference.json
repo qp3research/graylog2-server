@@ -1,9 +1,6 @@
 {
   "v": "1",
-  "type": {
-    "name": "input",
-    "version": "1"
-  },
+  "type": "input",
   "id": "78547c87-af21-4292-8e57-614da5baf6c3",
   "data": {
     "title": "GELF Input",
@@ -14,11 +11,5 @@
     },
     "extractors": [],
     "static_fields": []
-  },
-  "constraints": [
-    {
-      "type": "server-version",
-      "version": ">=3.0.0"
-    }
-  ]
+  }
 }

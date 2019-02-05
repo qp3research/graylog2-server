@@ -100,6 +100,7 @@ public abstract class LegacyContentPack implements ContentPack {
                 .description(description())
                 .vendor(vendor())
                 .url(url())
+                .requires(requires())
                 .parameters(parameters())
                 .entities(entities())
                 .build();
@@ -248,7 +249,7 @@ public abstract class LegacyContentPack implements ContentPack {
         private Entity convertInput(JsonNode json) {
             return EntityV1.builder()
                     .id(ModelId.of(json.path("id").asText(UUID.randomUUID().toString())))
-                    .type(ModelTypes.INPUT_V1)
+                    .type(ModelTypes.INPUT)
                     .version(ModelVersion.of("1"))
                     .data(json)
                     .build();
@@ -267,7 +268,7 @@ public abstract class LegacyContentPack implements ContentPack {
         private Entity convertStream(JsonNode json) {
             return EntityV1.builder()
                     .id(ModelId.of(json.path("id").asText(UUID.randomUUID().toString())))
-                    .type(ModelTypes.STREAM_V1)
+                    .type(ModelTypes.STREAM)
                     .version(ModelVersion.of("1"))
                     .data(json)
                     .build();
@@ -286,7 +287,7 @@ public abstract class LegacyContentPack implements ContentPack {
         private Entity convertOutput(JsonNode json) {
             return EntityV1.builder()
                     .id(ModelId.of(json.path("id").asText(UUID.randomUUID().toString())))
-                    .type(ModelTypes.OUTPUT_V1)
+                    .type(ModelTypes.OUTPUT)
                     .version(ModelVersion.of("1"))
                     .data(json)
                     .build();
@@ -305,7 +306,7 @@ public abstract class LegacyContentPack implements ContentPack {
         private Entity convertDashboard(JsonNode json) {
             return EntityV1.builder()
                     .id(ModelId.of(UUID.randomUUID().toString()))
-                    .type(ModelTypes.DASHBOARD_V1)
+                    .type(ModelTypes.DASHBOARD)
                     .version(ModelVersion.of("1"))
                     .data(json)
                     .build();
@@ -324,7 +325,7 @@ public abstract class LegacyContentPack implements ContentPack {
         private Entity convertGrokPattern(JsonNode json) {
             return EntityV1.builder()
                     .id(ModelId.of(json.path("name").asText(UUID.randomUUID().toString())))
-                    .type(ModelTypes.GROK_PATTERN_V1)
+                    .type(ModelTypes.GROK_PATTERN)
                     .version(ModelVersion.of("1"))
                     .data(json)
                     .build();
@@ -343,7 +344,7 @@ public abstract class LegacyContentPack implements ContentPack {
         private Entity convertLookupTable(JsonNode json) {
             return EntityV1.builder()
                     .id(ModelId.of(json.path("name").asText(UUID.randomUUID().toString())))
-                    .type(ModelTypes.LOOKUP_TABLE_V1)
+                    .type(ModelTypes.LOOKUP_TABLE)
                     .version(ModelVersion.of("1"))
                     .data(json)
                     .build();
@@ -362,7 +363,7 @@ public abstract class LegacyContentPack implements ContentPack {
         private Entity convertLookupCache(JsonNode json) {
             return EntityV1.builder()
                     .id(ModelId.of(json.path("name").asText(UUID.randomUUID().toString())))
-                    .type(ModelTypes.LOOKUP_CACHE_V1)
+                    .type(ModelTypes.LOOKUP_CACHE)
                     .version(ModelVersion.of("1"))
                     .data(json)
                     .build();
@@ -381,7 +382,7 @@ public abstract class LegacyContentPack implements ContentPack {
         private Entity convertLookupDataAdapter(JsonNode json) {
             return EntityV1.builder()
                     .id(ModelId.of(json.path("name").asText(UUID.randomUUID().toString())))
-                    .type(ModelTypes.LOOKUP_ADAPTER_V1)
+                    .type(ModelTypes.LOOKUP_ADAPTER)
                     .version(ModelVersion.of("1"))
                     .data(json)
                     .build();

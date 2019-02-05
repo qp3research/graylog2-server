@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.zafarkhaja.semver.Version;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Resources;
@@ -36,16 +35,12 @@ import org.graylog2.contentpacks.model.parameters.LongParameter;
 import org.graylog2.contentpacks.model.parameters.StringParameter;
 import org.graylog2.jackson.AutoValueSubtypeResolver;
 import org.graylog2.shared.bindings.providers.ObjectMapperProvider;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -61,27 +56,14 @@ public class ContentPackTest {
         objectMapper.setSubtypeResolver(new AutoValueSubtypeResolver());
     }
 
-    private ContentPack createTestContentPack() {
-        final ObjectNode boolData = objectMapper.createObjectNode()
-                .put("@type", "boolean")
-                .put("@value", true);
-        final ObjectNode doubleData = objectMapper.createObjectNode()
-                .put("@type", "double")
-                .put("@value", 1234.5678D);
-        final ObjectNode longData = objectMapper.createObjectNode()
-                .put("@type", "long")
-                .put("@value", 1234L);
-        final ObjectNode stringData = objectMapper.createObjectNode()
-                .put("@type", "string")
-                .put("@value", "foobar");
-
-        final ObjectNode entityData = objectMapper.createObjectNode();
-                entityData.set("bool", boolData);
-                entityData.set("double", doubleData);
-                entityData.set("long", longData);
-                entityData.set("string", stringData);
-
-        return ContentPackV1.builder()
+    @Test
+    public void serializeContentPackV1() {
+        final ObjectNode entityData = objectMapper.createObjectNode()
+                .put("bool", true)
+                .put("double", 1234.5678D)
+                .put("long", 1234L)
+                .put("string", "foobar");
+        final ContentPack contentPack = ContentPackV1.builder()
                 .id(ModelId.of("a7917ee5-3e1a-4f89-951d-aeb604616998"))
                 .revision(1)
                 .name("Test")
@@ -89,24 +71,19 @@ public class ContentPackTest {
                 .description("Description")
                 .vendor("Graylog, Inc.")
                 .url(URI.create("https://www.graylog.org"))
-                .createdAt(DateTime.parse("2018-12-17T16:18:12.000Z"))
-                .serverVersion(Version.valueOf("3.0.0-alpha.6-SNAPSHOT"))
+                .requires(ImmutableSet.of(
+                        GraylogVersionConstraint.builder().version("^3.0.0").build(),
+                        PluginVersionConstraint.builder().pluginId("org.example.TestPlugin").version("^1.2.3").build()))
                 .parameters(ImmutableSet.of(
                         BooleanParameter.builder().name("MY_BOOLEAN").title("My Boolean").description("Some description").build(),
                         DoubleParameter.builder().name("MY_DOUBLE").title("My Double").description("Some description").defaultValue(Optional.of(12.34D)).build(),
                         IntegerParameter.builder().name("MY_INTEGER").title("My Integer").description("Some description").defaultValue(Optional.of(23)).build(),
                         LongParameter.builder().name("MY_LONG").title("My Long").description("Some description").defaultValue(Optional.of(42L)).build(),
                         StringParameter.builder().name("MY_STRING").title("My String").description("Some description").defaultValue(Optional.of("Default Value")).build()))
-                .entities(ImmutableSet.of(EntityV1.builder().id(ModelId.of("fafd32d1-7f71-41a8-89f5-53c9b307d4d5")).type(ModelTypes.INPUT_V1).version(ModelVersion.of("1")).data(entityData)
-                        .constraints(ImmutableSet.of(
-                                GraylogVersionConstraint.builder().version("^3.0.0").build(),
-                                PluginVersionConstraint.builder().pluginId("org.example.TestPlugin").version("^1.2.3").build())).build()))
+                .entities(ImmutableSet.of(
+                        EntityV1.builder().id(ModelId.of("fafd32d1-7f71-41a8-89f5-53c9b307d4d5")).type(ModelTypes.INPUT).version(ModelVersion.of("1")).data(entityData).build()))
                 .build();
-    }
 
-    @Test
-    public void serializeContentPackV1() {
-        final ContentPack contentPack = createTestContentPack();
 
         final JsonNode jsonNode = objectMapper.convertValue(contentPack, JsonNode.class);
         assertThat(jsonNode).isNotNull();
@@ -118,6 +95,8 @@ public class ContentPackTest {
         assertThat(jsonNode.path("description").asText()).isEqualTo("Description");
         assertThat(jsonNode.path("vendor").asText()).isEqualTo("Graylog, Inc.");
         assertThat(jsonNode.path("url").asText()).isEqualTo("https://www.graylog.org");
+        final JsonNode requiresNode = jsonNode.withArray("requires");
+        assertThat(requiresNode).hasSize(2);
         final JsonNode parametersNode = jsonNode.withArray("parameters");
         assertThat(parametersNode).hasSize(5);
         final JsonNode entitiesNode = jsonNode.withArray("entities");
@@ -125,40 +104,14 @@ public class ContentPackTest {
         final JsonNode entityNode = entitiesNode.path(0);
         assertThat(entityNode.isObject()).isTrue();
         assertThat(entityNode.path("id").asText()).isEqualTo("fafd32d1-7f71-41a8-89f5-53c9b307d4d5");
-        assertThat(entityNode.path("type").path("name").asText()).isEqualTo("input");
-        assertThat(entityNode.path("type").path("version").asText()).isEqualTo("1");
+        assertThat(entityNode.path("type").asText()).isEqualTo("input");
         assertThat(entityNode.path("v").asText()).isEqualTo("1");
         final JsonNode entityDataNode = entityNode.path("data");
         assertThat(entityDataNode.isObject()).isTrue();
-        assertThat(entityDataNode.path("bool").path("@value").asBoolean()).isEqualTo(true);
-        assertThat(entityDataNode.path("double").path("@value").asDouble()).isEqualTo(1234.5678D);
-        assertThat(entityDataNode.path("long").path("@value").asLong()).isEqualTo(1234L);
-        assertThat(entityDataNode.path("string").path("@value").asText()).isEqualTo("foobar");
-    }
-
-    @Test
-    public void shouldDeserializeSerializedContentPack() throws Exception {
-        final ContentPack contentPack = createTestContentPack();
-
-        final URL contentPackURL = ContentPackTest.class.getResource("expected_content_pack.json");
-        Path path = Paths.get(contentPackURL.toURI());
-        String expectedJSON = String.join("", Files.readAllLines(path)).replace("\n", "").replace("\r", "");
-
-        final String jsonTxt = objectMapper.writeValueAsString(contentPack);
-        assertThat(jsonTxt).isEqualTo(expectedJSON);
-
-        final ContentPack readContentPack = objectMapper.readValue(jsonTxt, ContentPack.class);
-        assertThat(readContentPack.id()).isEqualTo(contentPack.id());
-        assertThat(readContentPack.version()).isEqualTo(contentPack.version());
-        assertThat(readContentPack.revision()).isEqualTo(contentPack.revision());
-    }
-
-    @Test
-    public void doesNotContainAutoValue() throws Exception {
-        final ContentPack contentPack = createTestContentPack();
-
-        final String jsonTxt = objectMapper.writeValueAsString(contentPack);
-        assertThat(jsonTxt).doesNotContain("AutoValue_");
+        assertThat(entityDataNode.path("bool").asBoolean()).isEqualTo(true);
+        assertThat(entityDataNode.path("double").asDouble()).isEqualTo(1234.5678D);
+        assertThat(entityDataNode.path("long").asLong()).isEqualTo(1234L);
+        assertThat(entityDataNode.path("string").asText()).isEqualTo("foobar");
     }
 
     @Test
@@ -193,6 +146,9 @@ public class ContentPackTest {
         assertThat(contentPackV1.description()).isEqualTo("## Description\\n- Free text description in markdown format");
         assertThat(contentPackV1.vendor()).isEqualTo("Graylog, Inc. <hello@graylog.com>");
         assertThat(contentPackV1.url()).isEqualTo(URI.create("https://github.com/graylog-labs/awesome-content-pack.git"));
+        assertThat(contentPackV1.requires()).containsExactly(
+                GraylogVersionConstraint.builder().version(">=3.0.0").build(),
+                PluginVersionConstraint.builder().pluginId("org.graylog.plugins.threatintel.ThreatIntelPlugin").version(">=3.0.0").build());
         assertThat(contentPackV1.parameters()).containsExactly(
                 IntegerParameter.builder()
                         .name("GELF_PORT")
@@ -209,20 +165,14 @@ public class ContentPackTest {
                 EntityV1.builder()
                         .version(ModelVersion.of("1"))
                         .id(ModelId.of("311d9e16-e4d9-485d-a916-337fb4ca0e8b"))
-                        .type(ModelTypes.LOOKUP_TABLE_V1)
+                        .type(ModelTypes.LOOKUP_TABLE)
                         .data(objectMapper.convertValue(expectedLookupTable, JsonNode.class))
-                        .constraints(ImmutableSet.of(
-                                GraylogVersionConstraint.builder().version(">=3.0.0").build(),
-                                PluginVersionConstraint.builder().pluginId("org.graylog.plugins.threatintel.ThreatIntelPlugin").version(">=3.0.0").build()))
                         .build(),
                 EntityV1.builder()
                         .version(ModelVersion.of("1"))
                         .id(ModelId.of("2562ac46-65f1-454c-89e1-e9be96bfd5e7"))
-                        .type(ModelTypes.LOOKUP_ADAPTER_V1)
+                        .type(ModelTypes.LOOKUP_ADAPTER)
                         .data(objectMapper.convertValue(expectedLookupDataAdapter, JsonNode.class))
-                        .constraints(ImmutableSet.of(
-                                GraylogVersionConstraint.builder().version(">=3.0.0").build(),
-                                PluginVersionConstraint.builder().pluginId("org.graylog.plugins.threatintel.ThreatIntelPlugin").version(">=3.0.0").build()))
                         .build()
         );
     }
@@ -264,8 +214,7 @@ public class ContentPackTest {
         final JsonNode entityNode = entitiesNode.path(0);
         assertThat(entityNode.isObject()).isTrue();
         assertThat(entityNode.path("id").asText()).isEqualTo("SOME_PATTERN");
-        assertThat(entityNode.path("type").path("name").asText()).isEqualTo("grok_pattern");
-        assertThat(entityNode.path("type").path("version").asText()).isEqualTo("1");
+        assertThat(entityNode.path("type").asText()).isEqualTo("grok_pattern");
         assertThat(entityNode.path("v").asText()).isEqualTo("1");
         final JsonNode entityDataNode = entityNode.path("data");
         assertThat(entityDataNode.isObject()).isTrue();
@@ -294,7 +243,7 @@ public class ContentPackTest {
         assertThat(legacyContentPack.entities()).contains(
                 EntityV1.builder()
                         .id(ModelId.of("53794eebe4b03cdadeadbeef"))
-                        .type(ModelTypes.INPUT_V1)
+                        .type(ModelTypes.INPUT)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("id", "53794eebe4b03cdadeadbeef")
@@ -336,7 +285,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("cafebabee4b0f504664790f8"))
-                        .type(ModelTypes.STREAM_V1)
+                        .type(ModelTypes.STREAM)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("id", "cafebabee4b0f504664790f8")
@@ -356,7 +305,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("56ba78eae4b0bcb6deadbeef"))
-                        .type(ModelTypes.OUTPUT_V1)
+                        .type(ModelTypes.OUTPUT)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("id", "56ba78eae4b0bcb6deadbeef")
@@ -377,7 +326,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("SOME_PATTERN"))
-                        .type(ModelTypes.GROK_PATTERN_V1)
+                        .type(ModelTypes.GROK_PATTERN)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("name", "SOME_PATTERN")
@@ -385,7 +334,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("generic-lookup-table"))
-                        .type(ModelTypes.LOOKUP_TABLE_V1)
+                        .type(ModelTypes.LOOKUP_TABLE)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("title", "Lookup Table Title")
@@ -400,7 +349,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("generic-lookup-cache"))
-                        .type(ModelTypes.LOOKUP_CACHE_V1)
+                        .type(ModelTypes.LOOKUP_CACHE)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("title", "Lookup Cache Title")
@@ -416,7 +365,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("generic-data-adapter"))
-                        .type(ModelTypes.LOOKUP_ADAPTER_V1)
+                        .type(ModelTypes.LOOKUP_ADAPTER)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("title", "Data Adapter Title")
@@ -443,10 +392,11 @@ public class ContentPackTest {
         assertThat(contentPack.vendor()).isEqualTo("[auto-generated]");
         assertThat(contentPack.url()).isEqualTo(URI.create("https://www.graylog.org/"));
         assertThat(contentPack.parameters()).isEmpty();
+        assertThat(contentPack.requires()).isEmpty();
         assertThat(contentPack.entities()).contains(
                 EntityV1.builder()
                         .id(ModelId.of("53794eebe4b03cdadeadbeef"))
-                        .type(ModelTypes.INPUT_V1)
+                        .type(ModelTypes.INPUT)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("id", "53794eebe4b03cdadeadbeef")
@@ -488,7 +438,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("cafebabee4b0f504664790f8"))
-                        .type(ModelTypes.STREAM_V1)
+                        .type(ModelTypes.STREAM)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("id", "cafebabee4b0f504664790f8")
@@ -508,7 +458,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("56ba78eae4b0bcb6deadbeef"))
-                        .type(ModelTypes.OUTPUT_V1)
+                        .type(ModelTypes.OUTPUT)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("id", "56ba78eae4b0bcb6deadbeef")
@@ -529,7 +479,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("SOME_PATTERN"))
-                        .type(ModelTypes.GROK_PATTERN_V1)
+                        .type(ModelTypes.GROK_PATTERN)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("name", "SOME_PATTERN")
@@ -537,7 +487,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("generic-lookup-table"))
-                        .type(ModelTypes.LOOKUP_TABLE_V1)
+                        .type(ModelTypes.LOOKUP_TABLE)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("title", "Lookup Table Title")
@@ -552,7 +502,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("generic-lookup-cache"))
-                        .type(ModelTypes.LOOKUP_CACHE_V1)
+                        .type(ModelTypes.LOOKUP_CACHE)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("title", "Lookup Cache Title")
@@ -568,7 +518,7 @@ public class ContentPackTest {
                         .build(),
                 EntityV1.builder()
                         .id(ModelId.of("generic-data-adapter"))
-                        .type(ModelTypes.LOOKUP_ADAPTER_V1)
+                        .type(ModelTypes.LOOKUP_ADAPTER)
                         .version(ModelVersion.of("1"))
                         .data(objectMapper.createObjectNode()
                                 .put("title", "Data Adapter Title")

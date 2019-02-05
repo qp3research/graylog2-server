@@ -16,14 +16,6 @@
  */
 package org.graylog.plugins.pipelineprocessor.functions;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -31,12 +23,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.net.InetAddresses;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import javax.inject.Provider;
 import org.graylog.plugins.pipelineprocessor.BaseParserTest;
 import org.graylog.plugins.pipelineprocessor.EvaluationContext;
 import org.graylog.plugins.pipelineprocessor.ast.Rule;
@@ -153,6 +139,21 @@ import org.joda.time.Period;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+
+import javax.inject.Provider;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FunctionsSnippetsTest extends BaseParserTest {
 
@@ -848,8 +849,7 @@ public class FunctionsSnippetsTest extends BaseParserTest {
         assertThat(message.getField("e")).isEqualTo("4");
         assertThat(message.getField("f")).isEqualTo("1");
         assertThat(message.getField("g")).isEqualTo("3");
-        assertThat(message.getField("h")).isEqualTo("3=:3");
-        assertThat(message.hasField("i")).isFalse();
+        assertThat(message.hasField("h")).isFalse();
 
         assertThat(message.getField("dup_first")).isEqualTo("1");
         assertThat(message.getField("dup_last")).isEqualTo("2");
@@ -957,13 +957,5 @@ public class FunctionsSnippetsTest extends BaseParserTest {
 
         assertThat(message).isNotNull();
         assertThat(message.getStreams()).containsOnly(defaultStream);
-    }
-
-    @Test
-    public void int2ipv4() {
-        final Rule rule = parser.parseRule(ruleForTest(), true);
-        evaluateRule(rule);
-
-        assertThat(actionsTriggered.get()).isTrue();
     }
 }

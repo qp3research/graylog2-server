@@ -34,12 +34,15 @@ public class AuditEventTypes implements PluginAuditEventTypes {
     public static final String ALERT_RECEIVER_DELETE = PREFIX + "alert_receiver:delete";
     public static final String ALERT_RECEIVER_UPDATE = PREFIX + "alert_receiver:update";
     public static final String AUTHENTICATION_PROVIDER_CONFIGURATION_UPDATE = PREFIX + "authentication_provider_configuration:update";
+    public static final String CATALOG_RESOLVE = PREFIX + "catalog:resolve";
     public static final String CLUSTER_CONFIGURATION_CREATE = PREFIX + "cluster_configuration:create";
     public static final String CLUSTER_CONFIGURATION_DELETE = PREFIX + "cluster_configuration:delete";
     public static final String CLUSTER_CONFIGURATION_UPDATE = PREFIX + "cluster_configuration:update";
+    public static final String CONTENT_PACK_APPLY = PREFIX + "content_pack:apply";
     public static final String CONTENT_PACK_CREATE = PREFIX + "content_pack:create";
     public static final String CONTENT_PACK_DELETE = PREFIX + "content_pack:delete";
-    public static final String CONTENT_PACK_DELETE_REV = PREFIX + "content_pack:delete_rev";
+    public static final String CONTENT_PACK_EXPORT = PREFIX + "content_pack:export";
+    public static final String CONTENT_PACK_UPDATE = PREFIX + "content_pack:update";
     public static final String CONTENT_PACK_INSTALL = PREFIX + "content_pack:install";
     public static final String CONTENT_PACK_UNINSTALL = PREFIX + "content_pack:uninstall";
     public static final String DASHBOARD_CREATE = PREFIX + "dashboard:create";
@@ -61,7 +64,6 @@ public class AuditEventTypes implements PluginAuditEventTypes {
     public static final String ES_INDEX_RETENTION_STRATEGY_UPDATE = PREFIX + "es_index_retention_strategy:update";
     public static final String ES_INDEX_ROTATION_COMPLETE = PREFIX + "es_index_rotation:complete";
     public static final String ES_INDEX_ROTATION_STRATEGY_UPDATE = PREFIX + "es_index_rotation_strategy:update";
-    public static final String ES_INDEX_TEMPLATE_UPDATE = PREFIX + "es_index_template:update";
     public static final String ES_WRITE_INDEX_UPDATE = PREFIX + "es_write_index:update";
     public static final String ES_WRITE_INDEX_UPDATE_JOB_START = PREFIX + "es_write_index_update_job:start";
     public static final String EXTRACTOR_CREATE = PREFIX + "extractor:create";
@@ -159,12 +161,15 @@ public class AuditEventTypes implements PluginAuditEventTypes {
             .add(ALERT_RECEIVER_DELETE)
             .add(ALERT_RECEIVER_UPDATE)
             .add(AUTHENTICATION_PROVIDER_CONFIGURATION_UPDATE)
+            .add(CATALOG_RESOLVE)
             .add(CLUSTER_CONFIGURATION_CREATE)
             .add(CLUSTER_CONFIGURATION_DELETE)
             .add(CLUSTER_CONFIGURATION_UPDATE)
+            .add(CONTENT_PACK_APPLY)
             .add(CONTENT_PACK_CREATE)
             .add(CONTENT_PACK_DELETE)
-            .add(CONTENT_PACK_DELETE_REV)
+            .add(CONTENT_PACK_EXPORT)
+            .add(CONTENT_PACK_UPDATE)
             .add(CONTENT_PACK_INSTALL)
             .add(CONTENT_PACK_UNINSTALL)
             .add(DASHBOARD_CREATE)
@@ -186,7 +191,6 @@ public class AuditEventTypes implements PluginAuditEventTypes {
             .add(ES_INDEX_RETENTION_STRATEGY_UPDATE)
             .add(ES_INDEX_ROTATION_COMPLETE)
             .add(ES_INDEX_ROTATION_STRATEGY_UPDATE)
-            .add(ES_INDEX_TEMPLATE_UPDATE)
             .add(ES_WRITE_INDEX_UPDATE)
             .add(ES_WRITE_INDEX_UPDATE_JOB_START)
             .add(EXTRACTOR_CREATE)

@@ -29,7 +29,6 @@ const CollectorsAdministrationContainer = createReactClass({
 
   componentDidMount() {
     this.loadData(this.props.nodeId);
-    this.interval = setInterval(this.reloadSidecars, 5000);
   },
 
   componentDidUpdate(prevProps) {
@@ -39,24 +38,12 @@ const CollectorsAdministrationContainer = createReactClass({
     }
   },
 
-  componentWillUnmount() {
-    if (this.interval) {
-      clearInterval(this.interval);
-    }
-  },
-
   loadData(nodeId) {
     const query = nodeId ? `node_id:${nodeId}` : '';
 
     CollectorsActions.all();
     SidecarsAdministrationActions.list({ query: query });
     CollectorConfigurationsActions.all();
-  },
-
-  reloadSidecars() {
-    if (this.state.sidecars) {
-      SidecarsAdministrationActions.refreshList();
-    }
   },
 
   handlePageChange(page, pageSize) {

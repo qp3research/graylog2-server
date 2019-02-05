@@ -191,10 +191,7 @@ exports[`<ContentPackEntitiesList /> should render with entities and parameters 
                   Description
                 </th>
                 <th>
-                  Origin
-                </th>
-                <th>
-                  Used Parameters
+                  Applied Parameter
                 </th>
                 <th>
                   Action
@@ -206,7 +203,7 @@ exports[`<ContentPackEntitiesList /> should render with entities and parameters 
                 <td
                   className="bigColumns"
                 >
-                  test
+                  A good input
                 </td>
                 <td>
                   Input
@@ -214,15 +211,7 @@ exports[`<ContentPackEntitiesList /> should render with entities and parameters 
                 <td
                   className="bigColumns"
                 >
-                  
-                </td>
-                <td>
-                  <span>
-                    <i
-                      className="fa fa-archive contentPackEntity"
-                      title="Content Pack"
-                    />
-                  </span>
+                  Input
                 </td>
                 <td>
                   1
@@ -238,7 +227,7 @@ exports[`<ContentPackEntitiesList /> should render with entities and parameters 
                       onClick={[Function]}
                       type="button"
                     >
-                      Edit
+                      Apply Parameter
                     </button>
                     <button
                       className="btn btn-xs btn-info"
@@ -263,15 +252,7 @@ exports[`<ContentPackEntitiesList /> should render with entities and parameters 
                 <td
                   className="bigColumns"
                 >
-                  
-                </td>
-                <td>
-                  <span>
-                    <i
-                      className="fa fa-server"
-                      title="Server"
-                    />
-                  </span>
+                  BadInput
                 </td>
                 <td>
                   0
@@ -287,7 +268,7 @@ exports[`<ContentPackEntitiesList /> should render with entities and parameters 
                       onClick={[Function]}
                       type="button"
                     >
-                      Edit
+                      Apply Parameter
                     </button>
                     <button
                       className="btn btn-xs btn-info"
