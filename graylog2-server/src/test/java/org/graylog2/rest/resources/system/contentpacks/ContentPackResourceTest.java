@@ -22,11 +22,8 @@ import org.graylog2.contentpacks.ContentPackPersistenceService;
 import org.graylog2.contentpacks.ContentPackService;
 import org.graylog2.contentpacks.model.ContentPack;
 import org.graylog2.contentpacks.model.ModelId;
-import org.graylog2.contentpacks.model.constraints.Constraint;
-import org.graylog2.contentpacks.model.constraints.ConstraintCheckResult;
 import org.graylog2.jackson.AutoValueSubtypeResolver;
 import org.graylog2.rest.models.system.contenpacks.responses.ContentPackList;
-import org.graylog2.rest.models.system.contenpacks.responses.ContentPackResponse;
 import org.graylog2.rest.models.system.contenpacks.responses.ContentPackRevisions;
 import org.graylog2.shared.bindings.GuiceInjectorHolder;
 import org.graylog2.shared.bindings.providers.ObjectMapperProvider;
@@ -124,11 +121,9 @@ public class ContentPackResourceTest {
     public void getContentPack() throws Exception {
         final ContentPack contentPack = objectMapper.readValue(CONTENT_PACK, ContentPack.class);
         final Set<ContentPack> contentPackSet = Collections.singleton(contentPack);
-        final Set<ConstraintCheckResult> constraints = Collections.emptySet();
 
         final Map<Integer, ContentPack> contentPacks = Collections.singletonMap(1, contentPack);
-        final Map<Integer, Set<ConstraintCheckResult>> constraintMap = Collections.singletonMap(1, constraints);
-        final ContentPackRevisions expectedRevisions = ContentPackRevisions.create(contentPacks, constraintMap);
+        final ContentPackRevisions expectedRevisions = ContentPackRevisions.create(contentPacks);
         final ModelId id = ModelId.of("1");
 
         when(contentPackPersistenceService.findAllById(id)).thenReturn(contentPackSet);
@@ -137,9 +132,9 @@ public class ContentPackResourceTest {
         assertThat(contentPackRevisions).isEqualTo(expectedRevisions);
 
         when(contentPackPersistenceService.findByIdAndRevision(id, 1)).thenReturn(Optional.ofNullable(contentPack));
-        final ContentPackResponse contentPackResponse = contentPackResource.getContentPackRevisions(id, 1);
+        final ContentPack contentPackResult = contentPackResource.listContentPackRevisions(id, 1);
         verify(contentPackPersistenceService, times(1)).findByIdAndRevision(id, 1);
-        assertThat(contentPackResponse.contentPack()).isEqualTo(contentPack);
+        assertThat(contentPackResult).isEqualTo(contentPack);
     }
 
     @Test
@@ -163,11 +158,6 @@ public class ContentPackResourceTest {
 
         @Override
         protected boolean isPermitted(String permission) {
-            return true;
-        }
-
-        @Override
-        protected boolean isPermitted(String permission, String id) {
             return true;
         }
 
