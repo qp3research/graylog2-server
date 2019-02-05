@@ -18,13 +18,12 @@ const { CollectorConfigurationsActions } = CombinedProvider.get('CollectorConfig
 
 const CollectorForm = createReactClass({
   displayName: 'CollectorForm',
+  mixins: [Reflux.connect(CollectorsStore)],
 
   propTypes: {
     action: PropTypes.oneOf(['create', 'edit']),
     collector: PropTypes.object,
   },
-
-  mixins: [Reflux.connect(CollectorsStore)],
 
   getDefaultProps() {
     return {
@@ -95,6 +94,12 @@ const CollectorForm = createReactClass({
     };
   },
 
+  _onListInputChange(key) {
+    return (event) => {
+      this._formDataUpdate(key)(event.target.value.split(' '));
+    };
+  },
+
   _onSubmit(event) {
     event.preventDefault();
     this._save();
@@ -124,10 +129,10 @@ const CollectorForm = createReactClass({
     let validationParameters = '';
     let executeParameters = '';
     if (this.state.formData.validation_parameters) {
-      validationParameters = this.state.formData.validation_parameters;
+      validationParameters = this.state.formData.validation_parameters.join(' ');
     }
     if (this.state.formData.execute_parameters) {
-      executeParameters = this.state.formData.execute_parameters;
+      executeParameters = this.state.formData.execute_parameters.join(' ');
     }
     return (
       <div>
@@ -184,14 +189,14 @@ const CollectorForm = createReactClass({
             <Input type="text"
                    id="executeParameters"
                    label="Execute Parameters"
-                   onChange={this._onInputChange('execute_parameters')}
+                   onChange={this._onListInputChange('execute_parameters')}
                    help="Parameters the collector is started with. %s will be replaced by the path to the configuration file."
                    value={executeParameters} />
 
             <Input type="text"
                    id="validationParameters"
                    label="Parameters for Configuration Validation"
-                   onChange={this._onInputChange('validation_parameters')}
+                   onChange={this._onListInputChange('validation_parameters')}
                    help="Parameters that validate the configuration file. %s will be replaced by the path to the configuration file."
                    value={validationParameters} />
 

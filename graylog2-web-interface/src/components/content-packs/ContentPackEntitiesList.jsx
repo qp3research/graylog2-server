@@ -30,7 +30,7 @@ class ContentPackEntitiesList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      filteredEntities: props.contentPack.entities || [],
+      filteredEntities: props.contentPack.entities,
       filter: undefined,
     };
   }
@@ -54,11 +54,11 @@ class ContentPackEntitiesList extends React.Component {
   };
 
   _entityTitle = (entity) => {
-    return (entity.data.title || entity.data.name || {}).value || '';
+    return (entity.data.title || {}).value || '';
   };
 
   _entityDescription = (entity) => {
-    return (entity.data.description || {}).value || '';
+    return (entity.data.description || entity.data.name || {}).value || '';
   };
 
   _entityRowFormatter = (entity) => {
@@ -127,7 +127,7 @@ class ContentPackEntitiesList extends React.Component {
     return (
       <tr key={entity.id}>
         <td className={ContentPackEntitiesListStyle.bigColumns}>{this._entityTitle(entity)}</td>
-        <td>{entity.type.name}</td>
+        <td>{entity.type}</td>
         <td className={ContentPackEntitiesListStyle.bigColumns}>{this._entityDescription(entity)}</td>
         {!this.props.readOnly && <td>{appliedParameterCount}</td>}
         <td>
@@ -173,7 +173,7 @@ class ContentPackEntitiesList extends React.Component {
           id="entity-list"
           headers={headers}
           className={ContentPackEntitiesListStyle.scrollable}
-          sortBy={entity => entity.type.name}
+          sortByKey="type"
           filterKeys={[]}
           rows={this.state.filteredEntities}
           dataRowFormatter={this._entityRowFormatter}
