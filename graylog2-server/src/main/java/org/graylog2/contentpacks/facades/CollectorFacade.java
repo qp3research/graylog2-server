@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -60,21 +59,14 @@ public class CollectorFacade implements EntityFacade<Collector> {
 
     @Override
     public EntityWithConstraints exportNativeEntity(Collector collector) {
-        final List<ValueReference> executeParameters = collector.executeParameters().stream()
-                .map(ValueReference::of)
-                .collect(Collectors.toList());
-        final List<ValueReference> validationCommand = collector.validationCommand().stream()
-                .map(ValueReference::of)
-                .collect(Collectors.toList());
-
         final CollectorEntity collectorEntity = CollectorEntity.create(
                 ValueReference.of(collector.name()),
                 ValueReference.of(collector.serviceType()),
                 ValueReference.of(collector.nodeOperatingSystem()),
                 ValueReference.of(collector.executablePath()),
                 ValueReference.of(collector.configurationPath()),
-                executeParameters,
-                validationCommand,
+                ValueReference.of(collector.executeParameters()),
+                ValueReference.of(collector.validationParameters()),
                 ValueReference.of(collector.defaultTemplate())
         );
 
@@ -102,26 +94,19 @@ public class CollectorFacade implements EntityFacade<Collector> {
     private NativeEntity<Collector> decode(EntityV1 entity, Map<String, ValueReference> parameters) {
         final CollectorEntity collectorEntity = objectMapper.convertValue(entity.data(), CollectorEntity.class);
 
-        final List<String> executeParameters = collectorEntity.executeParameters().stream()
-                .map(parameter -> parameter.asString(parameters))
-                .collect(Collectors.toList());
-        final List<String> validationCommand = collectorEntity.validationCommand().stream()
-                .map(parameter -> parameter.asString(parameters))
-                .collect(Collectors.toList());
-
         final Collector collector = Collector.builder()
                 .name(collectorEntity.name().asString(parameters))
                 .serviceType(collectorEntity.serviceType().asString(parameters))
                 .nodeOperatingSystem(collectorEntity.nodeOperatingSystem().asString(parameters))
                 .executablePath(collectorEntity.executablePath().asString(parameters))
                 .configurationPath(collectorEntity.configurationPath().asString(parameters))
-                .executeParameters(executeParameters)
-                .validationCommand(validationCommand)
+                .executeParameters(collectorEntity.executeParameters().asString(parameters))
+                .validationParameters(collectorEntity.validationParameters().asString(parameters))
                 .defaultTemplate(collectorEntity.defaultTemplate().asString(parameters))
                 .build();
 
         final Collector savedCollector = collectorService.save(collector);
-        return NativeEntity.create(entity.id().toString(), savedCollector.id(), TYPE, savedCollector);
+        return NativeEntity.create(entity.id(), savedCollector.id(), TYPE, savedCollector);
     }
 
     @Override
@@ -141,7 +126,7 @@ public class CollectorFacade implements EntityFacade<Collector> {
         final Optional<Collector> existingCollector = Optional.ofNullable(collectorService.findByName(name));
         existingCollector.ifPresent(collector -> compareCollectors(name, serviceType, collector));
 
-        return existingCollector.map(collector -> NativeEntity.create(entity.id().toString(), collector.id(), TYPE, collector));
+        return existingCollector.map(collector -> NativeEntity.create(entity.id(), collector.id(), TYPE, collector));
     }
 
     private void compareCollectors(String name, String serviceType, Collector existingCollector) {
