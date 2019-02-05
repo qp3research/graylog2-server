@@ -82,7 +82,6 @@ public class KeyValue extends AbstractFunction<Map<String, String>> {
 
         final Splitter entrySplitter = Splitter.on(kvDelimMatcher)
                 .omitEmptyStrings()
-                .limit(2)
                 .trimResults();
         return new MapSplitter(outerSplitter,
                                entrySplitter,

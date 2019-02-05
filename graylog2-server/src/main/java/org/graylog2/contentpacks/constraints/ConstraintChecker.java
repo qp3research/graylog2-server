@@ -17,12 +17,10 @@
 package org.graylog2.contentpacks.constraints;
 
 import org.graylog2.contentpacks.model.constraints.Constraint;
-import org.graylog2.contentpacks.model.constraints.ConstraintCheckResult;
 
 import java.util.Collection;
 import java.util.Set;
 
 public interface ConstraintChecker {
-    Set<Constraint> ensureConstraints(Collection<Constraint> requestedConstraints);
-    Set<ConstraintCheckResult> checkConstraints(Collection<Constraint> requestedConstraints);
+    Set<Constraint> checkConstraints(Collection<Constraint> requestedConstraints);
 }

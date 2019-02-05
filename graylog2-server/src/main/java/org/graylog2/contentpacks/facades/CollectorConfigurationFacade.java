@@ -49,7 +49,7 @@ import static java.util.Objects.isNull;
 public class CollectorConfigurationFacade implements EntityFacade<Configuration> {
     private static final Logger LOG = LoggerFactory.getLogger(CollectorConfigurationFacade.class);
 
-    public static final ModelType TYPE_V1 = ModelTypes.COLLECTOR_CONFIGURATION_V1;
+    public static final ModelType TYPE = ModelTypes.COLLECTOR_CONFIGURATION;
 
     private final ObjectMapper objectMapper;
     private final ConfigurationService configurationService;
@@ -70,7 +70,7 @@ public class CollectorConfigurationFacade implements EntityFacade<Configuration>
         final JsonNode data = objectMapper.convertValue(configurationEntity, JsonNode.class);
         final EntityV1 entity = EntityV1.builder()
                 .id(ModelId.of(configuration.id()))
-                .type(TYPE_V1)
+                .type(TYPE)
                 .data(data)
                 .build();
         return EntityWithConstraints.create(entity);
@@ -97,7 +97,7 @@ public class CollectorConfigurationFacade implements EntityFacade<Configuration>
                 configurationEntity.template().asString(parameters));
 
         final Configuration savedConfiguration = configurationService.save(configuration);
-        return NativeEntity.create(entity.id(), savedConfiguration.id(), TYPE_V1, savedConfiguration);
+        return NativeEntity.create(savedConfiguration.id(), TYPE, savedConfiguration);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class CollectorConfigurationFacade implements EntityFacade<Configuration>
     public EntityExcerpt createExcerpt(Configuration configuration) {
         return EntityExcerpt.builder()
                 .id(ModelId.of(configuration.id()))
-                .type(TYPE_V1)
+                .type(TYPE)
                 .title(configuration.name())
                 .build();
     }
@@ -150,7 +150,7 @@ public class CollectorConfigurationFacade implements EntityFacade<Configuration>
             LOG.debug("Could not find configuration {}", entityDescriptor);
         } else {
             final EntityDescriptor collectorEntityDescriptor = EntityDescriptor.create(
-                    configuration.collectorId(), ModelTypes.COLLECTOR_V1);
+                    configuration.collectorId(), ModelTypes.COLLECTOR);
             mutableGraph.putEdge(entityDescriptor, collectorEntityDescriptor);
         }
 
@@ -175,7 +175,7 @@ public class CollectorConfigurationFacade implements EntityFacade<Configuration>
         mutableGraph.addNode(entity);
 
         final CollectorConfigurationEntity configurationEntity = objectMapper.convertValue(entity.data(), CollectorConfigurationEntity.class);
-        final EntityDescriptor collectorDescriptor = EntityDescriptor.create(configurationEntity.collectorId().asString(parameters), ModelTypes.COLLECTOR_V1);
+        final EntityDescriptor collectorDescriptor = EntityDescriptor.create(configurationEntity.collectorId().asString(parameters), ModelTypes.COLLECTOR);
         final Entity collectorEntity = entities.get(collectorDescriptor);
 
         if (collectorEntity != null) {

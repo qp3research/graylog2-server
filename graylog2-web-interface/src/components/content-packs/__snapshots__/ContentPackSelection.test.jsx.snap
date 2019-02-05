@@ -43,7 +43,7 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
               <span
                 className="help-block"
               >
-                Required. Give a descriptive name for this content pack.
+                Give a descriptive name for this content pack.
               </span>
             </span>
           </div>
@@ -72,7 +72,7 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
               <span
                 className="help-block"
               >
-                Required. Give a short summary of the content pack.
+                Give a short summary of the content pack.
               </span>
             </span>
           </div>
@@ -93,6 +93,7 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
                 name="description"
                 onChange={[Function]}
                 placeholder=""
+                required={true}
                 rows={6}
                 type="textarea"
                 value={undefined}
@@ -129,7 +130,7 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
               <span
                 className="help-block"
               >
-                Required. Who did this content pack and how can he be reached. e.g Name and eMail
+                Who did this content pack and how can he be reached. e.g Name and eMail
               </span>
             </span>
           </div>
@@ -151,6 +152,7 @@ exports[`<ContentPackSelection /> should render with empty content pack 1`] = `
                 name="url"
                 onChange={[Function]}
                 placeholder=""
+                required={true}
                 type="text"
                 value={undefined}
               />
@@ -307,7 +309,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
               <span
                 className="help-block"
               >
-                Required. Give a descriptive name for this content pack.
+                Give a descriptive name for this content pack.
               </span>
             </span>
           </div>
@@ -336,7 +338,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
               <span
                 className="help-block"
               >
-                Required. Give a short summary of the content pack.
+                Give a short summary of the content pack.
               </span>
             </span>
           </div>
@@ -357,6 +359,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
                 name="description"
                 onChange={[Function]}
                 placeholder=""
+                required={true}
                 rows={6}
                 type="textarea"
                 value="descr"
@@ -393,7 +396,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
               <span
                 className="help-block"
               >
-                Required. Who did this content pack and how can he be reached. e.g Name and eMail
+                Who did this content pack and how can he be reached. e.g Name and eMail
               </span>
             </span>
           </div>
@@ -415,6 +418,7 @@ exports[`<ContentPackSelection /> should render with filled content pack 1`] = `
                 name="url"
                 onChange={[Function]}
                 placeholder=""
+                required={true}
                 type="text"
                 value="http://example.com"
               />
