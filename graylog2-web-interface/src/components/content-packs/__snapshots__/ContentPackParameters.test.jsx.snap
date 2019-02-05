@@ -298,13 +298,11 @@ exports[`<ContentPackParameters /> should render a parameter 1`] = `
                       >
                         A good input
                       </td>
-                      <td>
-                        input
-                      </td>
+                      <td />
                       <td
                         className="bigColumns"
                       >
-                        
+                        Input
                       </td>
                       <td>
                         0
