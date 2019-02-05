@@ -83,7 +83,7 @@ public class CollectorService extends PaginatedDbService<Collector> {
                 request.executablePath(),
                 request.configurationPath(),
                 request.executeParameters(),
-                request.validationParameters(),
+                request.validationCommand(),
                 request.defaultTemplate());
     }
 
