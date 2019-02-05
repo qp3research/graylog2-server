@@ -8,10 +8,7 @@ import ContentPackEntitiesList from 'components/content-packs/ContentPackEntitie
 describe('<ContentPackEntitiesList />', () => {
   const entity1 = {
     id: '111-beef',
-    type: {
-      name: 'Input',
-      version: '1',
-    },
+    type: 'Input',
     v: '1.0',
     data: {
       name: { type: 'string', value: 'Input' },
@@ -24,10 +21,7 @@ describe('<ContentPackEntitiesList />', () => {
   };
   const entity2 = {
     id: '121-beef',
-    type: {
-      name: 'Input',
-      version: '1',
-    },
+    type: 'Input',
     v: '1.0',
     data: {
       name: { type: 'string', value: 'BadInput' },

@@ -44,7 +44,6 @@ import org.graylog2.contentpacks.model.ModelId;
 import org.graylog2.contentpacks.model.ModelType;
 import org.graylog2.contentpacks.model.ModelTypes;
 import org.graylog2.contentpacks.model.constraints.Constraint;
-import org.graylog2.contentpacks.model.constraints.ConstraintCheckResult;
 import org.graylog2.contentpacks.model.constraints.GraylogVersionConstraint;
 import org.graylog2.contentpacks.model.entities.EntitiesWithConstraints;
 import org.graylog2.contentpacks.model.entities.Entity;
@@ -107,7 +106,7 @@ public class ContentPackService {
                                                       Map<String, ValueReference> parameters,
                                                       String comment,
                                                       String user) {
-        ensureConstraints(contentPack.requires());
+        checkConstraints(contentPack.requires());
 
         final Entity rootEntity = EntityV1.builder()
                 .type(ModelTypes.ROOT)
@@ -293,10 +292,10 @@ public class ContentPackService {
         return ImmutableGraph.copyOf(dependencyGraph);
     }
 
-    private void ensureConstraints(Set<Constraint> requiredConstraints) {
+    private void checkConstraints(Set<Constraint> requiredConstraints) {
         final Set<Constraint> fulfilledConstraints = new HashSet<>();
         for (ConstraintChecker constraintChecker : constraintCheckers) {
-            fulfilledConstraints.addAll(constraintChecker.ensureConstraints(requiredConstraints));
+            fulfilledConstraints.addAll(constraintChecker.checkConstraints(requiredConstraints));
         }
 
         if (!fulfilledConstraints.equals(requiredConstraints)) {
@@ -304,16 +303,6 @@ public class ContentPackService {
             throw new FailedConstraintsException(failedConstraints);
         }
     }
-
-    public Set<ConstraintCheckResult> checkConstraints(ContentPack contentPackV1) {
-        Set<Constraint> requiredConstraints = contentPackV1.requires();
-        final Set<ConstraintCheckResult> fulfilledConstraints = new HashSet<>();
-        for (ConstraintChecker constraintChecker : constraintCheckers) {
-            fulfilledConstraints.addAll(constraintChecker.checkConstraints(requiredConstraints));
-        }
-        return fulfilledConstraints;
-    }
-
 
     private ImmutableMap<String, ValueReference> validateParameters(Map<String, ValueReference> parameters,
                                                                     Set<Parameter> contentPackParameters) {
